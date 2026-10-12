@@ -1,0 +1,74 @@
+{
+  "business": {
+    "Response": {
+      "Ready": 1,
+      "SummaryOverview": [
+        {
+          "TagValue": "TSP",
+          "RealTotalCost": "10372.09658939",
+          "TotalCost": "27209.36321189",
+          "CashPayAmount": "2.35902575",
+          "IncentivePayAmount": "10369.73756364",
+          "VoucherPayAmount": "0.00000000",
+          "TransferPayAmount": "0.00000000",
+          "RealTotalCostRatio": "100.00"
+        },
+        {
+          "TagValue": "",
+          "RealTotalCost": "6541.59326840",
+          "TotalCost": "12294.94979328",
+          "CashPayAmount": "-2.35902575",
+          "IncentivePayAmount": "6543.95229415",
+          "VoucherPayAmount": "0.00000000",
+          "TransferPayAmount": "0.00000000",
+          "RealTotalCostRatio": "0.00"
+        },
+        {
+          "TagValue": "Int and Pre public",
+          "RealTotalCost": "1368.70000000",
+          "TotalCost": "3859.20000000",
+          "CashPayAmount": "0.00000000",
+          "IncentivePayAmount": "1368.70000000",
+          "VoucherPayAmount": "0.00000000",
+          "TransferPayAmount": "0.00000000",
+          "RealTotalCostRatio": "0.00"
+        },
+        {
+          "TagValue": "model",
+          "RealTotalCost": "423.68000000",
+          "TotalCost": "2036.00000000",
+          "CashPayAmount": "0.00000000",
+          "IncentivePayAmount": "423.68000000",
+          "VoucherPayAmount": "0.00000000",
+          "TransferPayAmount": "0.00000000",
+          "RealTotalCostRatio": "0.00"
+        },
+        {
+          "TagValue": "Devops",
+          "RealTotalCost": "359.54654221",
+          "TotalCost": "771.26859688",
+          "CashPayAmount": "0.00000000",
+          "IncentivePayAmount": "359.54654221",
+          "VoucherPayAmount": "0.00000000",
+          "TransferPayAmount": "0.00000000",
+          "RealTotalCostRatio": "0.00"
+        },
+        {
+          "TagValue": "TCS",
+          "RealTotalCost": "252.51360000",
+          "TotalCost": "372.00000000",
+          "CashPayAmount": "0.00000000",
+          "IncentivePayAmount": "252.51360000",
+          "VoucherPayAmount": "0.00000000",
+          "TransferPayAmount": "0.00000000",
+          "RealTotalCostRatio": "0.00"
+        }
+      ],
+      "SummaryTotal": {
+        "RealTotalCost": "19318.13000000",
+        "TotalCost": "46542.78160205"
+      },
+      "RequestId": "73774a51-140f-4d15-8431-16645cc78138"
+    }
+  }
+}

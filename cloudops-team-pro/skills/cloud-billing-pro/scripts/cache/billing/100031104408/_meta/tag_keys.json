@@ -1,0 +1,23 @@
+{
+  "Tags": [
+    "tke-lifecycle-owner",
+    "release_time",
+    "tencentcloud:autoscaling:auto-scaling-group-id",
+    "biz",
+    "tke-created",
+    "tke-kind",
+    "resource",
+    "region",
+    "item",
+    "test",
+    "tke-clusterId",
+    "tke-createdBy-flag",
+    "tke-lb-serviceuuid",
+    "backup-head",
+    "head",
+    "vpc",
+    "business",
+    "env"
+  ],
+  "TotalCount": 18
+}

@@ -1,0 +1,19 @@
+{
+  "Tags": [
+    "BUS-DEPT-PJ-ENV",
+    "ORG-DEP-PJ-ENV",
+    "tke-lifecycle-owner",
+    "tke-cbs-provisioner-createBy-flag",
+    "tke-lb-ingress-uuid",
+    "tke-createdBy-flag",
+    "DSSO-EI",
+    "tke-lb-serviceuuid",
+    "PROD_ENV",
+    "PROD_PJ",
+    "tke-clusterId",
+    "TEST_ENV",
+    "TEST_PJ",
+    "ORG"
+  ],
+  "TotalCount": 14
+}

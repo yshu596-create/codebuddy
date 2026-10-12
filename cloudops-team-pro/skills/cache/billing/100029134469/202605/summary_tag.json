@@ -1,0 +1,24 @@
+{
+  "ORG-DEP-PJ-ENV": {
+    "Response": {
+      "Ready": 1,
+      "SummaryOverview": [
+        {
+          "TagValue": "",
+          "RealTotalCost": "0.00000000",
+          "TotalCost": "0.00000000",
+          "CashPayAmount": "0.00000000",
+          "IncentivePayAmount": "0.00000000",
+          "VoucherPayAmount": "0.00000000",
+          "TransferPayAmount": "0.00000000",
+          "RealTotalCostRatio": "100.00"
+        }
+      ],
+      "SummaryTotal": {
+        "RealTotalCost": "0",
+        "TotalCost": "0"
+      },
+      "RequestId": "9bd26c34-5cd7-49d9-9b9f-a53090dca370"
+    }
+  }
+}

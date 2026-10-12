@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>TSP 2026-05 Idle Resource Inspection Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #0b1020 0%, #131933 100%);
+  color: #f5f6fb;
+  min-height: 100vh;
+  padding: 40px 32px;
+  line-height: 1.6;
+}
+.container { max-width: 1280px; margin: 0 auto; }
+header { margin-bottom: 32px; }
+h1 { font-size: 32px; font-weight: 700; margin: 0 0 8px 0; letter-spacing: 0.5px; }
+.subtitle { color: rgba(245,246,251,0.65); font-size: 14px; }
+.subtitle span { color: rgba(245,246,251,0.45); margin-left: 12px; }
+
+.card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.card-title { font-size: 18px; font-weight: 600; margin: 0 0 18px 0; display: flex; align-items: center; gap: 8px; }
+.card-title .badge { font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 999px; background: rgba(122,162,255,0.18); color: #7aa2ff; }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.kpi {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 20px 22px;
+}
+.kpi-label { color: rgba(245,246,251,0.6); font-size: 13px; margin-bottom: 8px; }
+.kpi-value { font-size: 28px; font-weight: 700; font-family: "SF Mono", "JetBrains Mono", Consolas, Menlo, monospace; }
+.kpi-sub { color: rgba(245,246,251,0.55); font-size: 12px; margin-top: 6px; }
+.kpi-value.saving { color: #4ade80; }
+.kpi-value.risk { color: #ff6b6b; }
+.kpi-value.shield { color: #7aa2ff; }
+
+.charts-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 24px; }
+.chart-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px; }
+.chart-title { font-size: 14px; font-weight: 600; color: rgba(245,246,251,0.85); margin-bottom: 12px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+th { color: rgba(245,246,251,0.65); font-weight: 600; font-size: 12px; background: rgba(255,255,255,0.03); position: sticky; top: 0; z-index: 1; white-space: nowrap; }
+td.num { font-family: "SF Mono", "JetBrains Mono", Consolas, Menlo, monospace; text-align: right; }
+.scroll-table { max-height: 460px; overflow-y: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); }
+
+.sev { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.sev-critical { background: rgba(255,107,107,0.18); color: #ff6b6b; }
+.sev-high { background: rgba(251,191,36,0.18); color: #fbbf24; }
+.sev-medium_high { background: rgba(251,146,36,0.18); color: #fb9224; }
+.sev-medium { background: rgba(250,204,21,0.16); color: #facc15; }
+.sev-low { background: rgba(74,222,128,0.16); color: #4ade80; }
+
+.saving-cell { color: #4ade80; font-weight: 600; }
+.tag-cell { display: inline-block; padding: 1px 8px; margin-right: 4px; background: rgba(122,162,255,0.15); color: #7aa2ff; font-size: 12px; border-radius: 6px; }
+.tag-cell.warn { background: rgba(251,191,36,0.18); color: #fbbf24; }
+.muted { color: rgba(245,246,251,0.45); }
+
+.insight-card { background: rgba(255,255,255,0.03); border-left: 3px solid #7aa2ff; padding: 10px 14px; margin-bottom: 10px; border-radius: 6px; }
+.insight-card.warn { border-left-color: #fbbf24; }
+.insight-card.danger { border-left-color: #ff6b6b; }
+.insight-card .level { display: inline-block; font-size: 12px; padding: 0 8px; border-radius: 4px; margin-right: 8px; background: rgba(122,162,255,0.18); color: #7aa2ff; }
+.insight-card.warn .level { background: rgba(251,191,36,0.18); color: #fbbf24; }
+.insight-card.danger .level { background: rgba(255,107,107,0.18); color: #ff6b6b; }
+
+.section-heading { display: flex; align-items: center; gap: 10px; margin: 0 0 14px 0; font-size: 15px; font-weight: 600; }
+.section-heading .count { color: rgba(245,246,251,0.55); font-size: 13px; font-weight: 500; }
+
+/* 列筛选器 — 集成在表头 */
+.col-filter-wrap { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.col-filter-btn {
+  background: none; border: none; color: rgba(245,246,251,0.4); font-size: 10px; cursor: pointer;
+  padding: 2px 4px; border-radius: 4px; line-height: 1;
+}
+.col-filter-btn:hover { color: #7aa2ff; background: rgba(122,162,255,0.1); }
+.col-filter-btn.active { color: #7aa2ff; }
+.col-filter-dropdown {
+  position: absolute; top: calc(100% + 2px); left: 0; min-width: 180px; max-width: 260px;
+  background: #1a1f35; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+  padding: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 100;
+  display: none; max-height: 280px; overflow-y: auto; text-align: left;
+}
+.col-filter-dropdown.open { display: block; }
+.col-filter-dropdown label {
+  display: flex; align-items: center; gap: 8px; padding: 4px 6px;
+  font-size: 13px; color: rgba(245,246,251,0.8); cursor: pointer; border-radius: 6px;
+  white-space: nowrap;
+}
+.col-filter-dropdown label:hover { background: rgba(255,255,255,0.06); }
+.col-filter-dropdown input[type="checkbox"] { accent-color: #7aa2ff; }
+.col-filter-dropdown .filter-actions {
+  display: flex; gap: 8px; padding: 8px 6px 2px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 4px;
+}
+.col-filter-dropdown .filter-actions button {
+  flex: 1; background: rgba(122,162,255,0.15); border: none; border-radius: 6px;
+  padding: 4px 0; color: #7aa2ff; font-size: 12px; cursor: pointer;
+}
+.col-filter-dropdown .filter-actions button:last-child { background: rgba(255,255,255,0.06); color: rgba(245,246,251,0.6); }
+.col-filter-input {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px; padding: 3px 8px; color: rgba(245,246,251,0.85);
+  font-size: 11px; width: 100%; outline: none; margin-top: 4px;
+}
+.col-filter-input::placeholder { color: rgba(245,246,251,0.4); }
+.filter-result-count { color: rgba(245,246,251,0.55); font-size: 12px; margin-left: auto; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head><body>
+<div class="container">
+<header>
+<h1>TSP · Idle Resource Inspection Dashboard</h1>
+<div class="subtitle">Billing Month 2026-05 <span>Monitoring Window 2026-05-01 ~ 2026-05-31 (30 days)</span></div>
+</header>
+<div class="card">
+<h2 class="card-title">Key Metrics <span class="badge">KPI</span></h2>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Monthly Bill Total</div>
+        <div class="kpi-value">¥19,318</div>
+        <div class="kpi-sub">Billing Month 2026-05</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Est. Monthly Savings</div>
+        <div class="kpi-value saving">¥904</div>
+        <div class="kpi-sub">of Total Bill 4.7%</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Optimization Findings</div>
+        <div class="kpi-value risk">18</div>
+        <div class="kpi-sub">incl. 5 critical / 0 high / 10 medium / 3 low risk</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Resources Scanned</div>
+        <div class="kpi-value shield">19</div>
+        <div class="kpi-sub">18 flagged / 1 protected / 0 exempted</div>
+      </div>
+    </div>
+    
+</div>
+<div class="card">
+<h2 class="card-title">Risk Breakdown</h2>
+<div class="charts-grid">
+
+    <div class="chart-box">
+      <div class="chart-title">Severity Distribution</div>
+      <div style="position: relative; height: 280px;"><canvas id="sevChart"></canvas></div>
+    </div>
+    
+
+    <div class="chart-box">
+      <div class="chart-title">Top Products by Est. Savings</div>
+      <div style="position: relative; height: 280px;"><canvas id="productChart"></canvas></div>
+    </div>
+    
+</div></div>
+<div class="card">
+<h2 class="card-title">All Optimization Opportunities <span class="badge">18 items</span></h2>
+
+    <div class="scroll-table">
+      <table id="findings-table">
+        <thead>
+          <tr>
+            <th style="position:relative;">
+    <div class="col-filter-wrap">
+      <span>Severity</span>
+      <button class="col-filter-btn" onclick="toggleColFilter('sev', this)" id="sev-btn">▼</button>
+    </div>
+    <div class="col-filter-dropdown" id="sev-dropdown">
+      <label><input type="checkbox" class="filter-sev" value="critical">🔴 Critical Waste</label><label><input type="checkbox" class="filter-sev" value="medium">🟡 Medium Priority</label><label><input type="checkbox" class="filter-sev" value="low">🟢 Low Risk</label>
+      <div class="filter-actions"><button onclick="selectAll('sev')">Select All</button><button onclick="clearFilter('sev')">Reset</button></div>
+      
+    </div>
+    </th>
+            <th style="position:relative;">
+    <div class="col-filter-wrap">
+      <span>Product</span>
+      <button class="col-filter-btn" onclick="toggleColFilter('prod', this)" id="prod-btn">▼</button>
+    </div>
+    <div class="col-filter-dropdown" id="prod-dropdown">
+      <label><input type="checkbox" class="filter-prod" value="CVM 云服务器">CVM 云服务器</label><label><input type="checkbox" class="filter-prod" value="ES Elasticsearch">ES Elasticsearch</label><label><input type="checkbox" class="filter-prod" value="MongoDB">MongoDB</label><label><input type="checkbox" class="filter-prod" value="MySQL">MySQL</label><label><input type="checkbox" class="filter-prod" value="Redis">Redis</label>
+      <div class="filter-actions"><button onclick="selectAll('prod')">Select All</button><button onclick="clearFilter('prod')">Reset</button></div>
+      
+    </div>
+    </th>
+            <th>Resource</th>
+            <th>Region</th>
+            <th>Spec</th>
+            <th style="position:relative;">
+    <div class="col-filter-wrap">
+      <span>Action</span>
+      <button class="col-filter-btn" onclick="toggleColFilter('path', this)" id="path-btn">▼</button>
+    </div>
+    <div class="col-filter-dropdown" id="path-dropdown">
+      <label><input type="checkbox" class="filter-path" value="Elasticsearch 集群利用率不足">Elasticsearch 集群利用率不足</label><label><input type="checkbox" class="filter-path" value="云数据库（MongoDB）利用率不足">云数据库（MongoDB）利用率不足</label><label><input type="checkbox" class="filter-path" value="云数据库（Redis）利用率不足">云数据库（Redis）利用率不足</label><label><input type="checkbox" class="filter-path" value="定时关机">定时关机</label><label><input type="checkbox" class="filter-path" value="计费优化">计费优化</label><label><input type="checkbox" class="filter-path" value="释放">释放</label><label><input type="checkbox" class="filter-path" value="降配">降配</label>
+      <div class="filter-actions"><button onclick="selectAll('path')">Select All</button><button onclick="clearFilter('path')">Reset</button></div>
+      
+    </div>
+    </th>
+            <th>Recommendation</th>
+            <th>Target Spec</th>
+            <th>Baseline</th>
+            <th>Est. Monthly Savings</th>
+            <th style="position:relative;">
+    <div class="col-filter-wrap">
+      <span>Owner</span>
+      <button class="col-filter-btn" onclick="toggleColFilter('owner', this)" id="owner-btn">▼</button>
+    </div>
+    <div class="col-filter-dropdown" id="owner-dropdown">
+      <label><input type="checkbox" class="filter-owner" value="andynni">andynni</label><label><input type="checkbox" class="filter-owner" value="andyyfang">andyyfang</label><label><input type="checkbox" class="filter-owner" value="colinnli">colinnli</label><label><input type="checkbox" class="filter-owner" value="shinyxusun">shinyxusun</label>
+      <div class="filter-actions"><button onclick="selectAll('owner')">Select All</button><button onclick="clearFilter('owner')">Reset</button></div>
+      
+    </div>
+    </th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="andynni" data-optimize-path="释放">
+          <td><span class="sev sev-critical">🔴 Critical Waste</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-gpb2dlgg<div class="muted" style="font-size:12px;">pressure_measurement-test-01</div></td>
+          <td>ap-guangzhou</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>创建快照备份后释放实例（仅磁盘继续计费，如不再使用请释放）</td>
+          <td>释放实例(创建快照备份)</td>
+          <td class="num">¥117</td>
+          <td class="num saving-cell">¥72</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="andynni" data-optimize-path="计费优化">
+          <td><span class="sev sev-critical">🔴 Critical Waste</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-p1iw4h50<div class="muted" style="font-size:12px;">prod-tsp-6th-guangzhou-cvm-01</div></td>
+          <td>ap-guangzhou</td>
+          <td>16核64GB</td>
+          <td><span class="tag-cell">计费优化</span></td>
+          <td>转包年包月（正常使用中）</td>
+          <td>转包年包月</td>
+          <td class="num">¥178</td>
+          <td class="num saving-cell">¥71</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="andynni" data-optimize-path="计费优化">
+          <td><span class="sev sev-critical">🔴 Critical Waste</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-jrndnn0i<div class="muted" style="font-size:12px;">prod-tsp-6th-guangzhou-cvm-02</div></td>
+          <td>ap-guangzhou</td>
+          <td>16核64GB</td>
+          <td><span class="tag-cell">计费优化</span></td>
+          <td>转包年包月（正常使用中）</td>
+          <td>转包年包月</td>
+          <td class="num">¥178</td>
+          <td class="num saving-cell">¥71</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="andynni" data-optimize-path="释放">
+          <td><span class="sev sev-critical">🔴 Critical Waste</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-ggr6ko74<div class="muted" style="font-size:12px;">TBOX-Int-CVM-01</div></td>
+          <td>ap-guangzhou</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>创建快照备份后释放实例（仅磁盘继续计费，如不再使用请释放）</td>
+          <td>释放实例(创建快照备份)</td>
+          <td class="num">¥117</td>
+          <td class="num saving-cell">¥27</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="andyyfang" data-optimize-path="释放">
+          <td><span class="sev sev-critical">🔴 Critical Waste</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-8gvszw78<div class="muted" style="font-size:12px;">workbuddy测试</div></td>
+          <td>ap-guangzhou</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>创建快照备份后释放实例（仅磁盘继续计费，如不再使用请释放）</td>
+          <td>释放实例(创建快照备份)</td>
+          <td class="num">¥1</td>
+          <td class="num saving-cell">¥0</td>
+          <td>andyyfang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MongoDB"
+            data-owner="colinnli" data-optimize-path="云数据库（MongoDB）利用率不足">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>MongoDB</td>
+          <td>cmgo-lpw6txl7<div class="muted" style="font-size:12px;">Int-tsp-mongodb</div></td>
+          <td>ap-guangzhou</td>
+          <td>1</td>
+          <td><span class="tag-cell">云数据库（MongoDB）利用率不足</span></td>
+          <td>4核8GB → 2核4GB</td>
+          <td>降至 2核4GB</td>
+          <td class="num">¥381</td>
+          <td class="num saving-cell">¥114</td>
+          <td>colinnli</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="ES Elasticsearch"
+            data-owner="shinyxusun" data-optimize-path="Elasticsearch 集群利用率不足">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>ES Elasticsearch</td>
+          <td>es-3o16cejn<div class="muted" style="font-size:12px;">model-int-01</div></td>
+          <td>ap-guangzhou</td>
+          <td>es-3o16cejn.tencentelasticsearch.com</td>
+          <td><span class="tag-cell">Elasticsearch 集群利用率不足</span></td>
+          <td>Elasticsearch 集群利用率不足</td>
+          <td>降配</td>
+          <td class="num">¥261</td>
+          <td class="num saving-cell">¥91</td>
+          <td>shinyxusun</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="ES Elasticsearch"
+            data-owner="andynni" data-optimize-path="Elasticsearch 集群利用率不足">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>ES Elasticsearch</td>
+          <td>es-oso2qu09<div class="muted" style="font-size:12px;">public-7th-guangzhou-es</div></td>
+          <td>ap-guangzhou</td>
+          <td>es-oso2qu09.tencentelasticsearch.com</td>
+          <td><span class="tag-cell">Elasticsearch 集群利用率不足</span></td>
+          <td>Elasticsearch 集群利用率不足</td>
+          <td>降配</td>
+          <td class="num">¥261</td>
+          <td class="num saving-cell">¥91</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="andynni" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>MySQL</td>
+          <td>cdb-hxnloc03<div class="muted" style="font-size:12px;">Prod-6th-guangzhou-mysql-01</div></td>
+          <td>ap-guangzhou</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>2核4GB → 1核2GB</td>
+          <td>降至 1核2GB</td>
+          <td class="num">¥64</td>
+          <td class="num saving-cell">¥64</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="andynni" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>MySQL</td>
+          <td>cdb-geldbizl<div class="muted" style="font-size:12px;">public-7th-guangzhou-mysql-01</div></td>
+          <td>ap-guangzhou</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>2核4GB → 1核2GB</td>
+          <td>降至 1核2GB</td>
+          <td class="num">¥64</td>
+          <td class="num saving-cell">¥64</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="andynni" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-asjcbatc<div class="muted" style="font-size:12px;">emr-Core.1_emr-6237v92n</div></td>
+          <td>ap-guangzhou</td>
+          <td>16核64GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>16核64GB → 8核32GB</td>
+          <td>降至 8核32GB</td>
+          <td class="num">¥117</td>
+          <td class="num saving-cell">¥58</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="andynni" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-julbt1gq<div class="muted" style="font-size:12px;">emr-Core.2_emr-6237v92n</div></td>
+          <td>ap-guangzhou</td>
+          <td>16核64GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>16核64GB → 8核32GB</td>
+          <td>降至 8核32GB</td>
+          <td class="num">¥117</td>
+          <td class="num saving-cell">¥58</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MongoDB"
+            data-owner="-" data-optimize-path="云数据库（MongoDB）利用率不足">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>MongoDB</td>
+          <td>cmgo-hvrun1j7<div class="muted" style="font-size:12px;">prod-6th-guangzhou-mongo</div></td>
+          <td>ap-guangzhou</td>
+          <td>1</td>
+          <td><span class="tag-cell">云数据库（MongoDB）利用率不足</span></td>
+          <td>2核4GB → 1核2GB</td>
+          <td>降至 1核2GB</td>
+          <td class="num">¥179</td>
+          <td class="num saving-cell">¥53</td>
+          <td>-</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="Redis"
+            data-owner="andynni" data-optimize-path="云数据库（Redis）利用率不足">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>Redis</td>
+          <td>crs-6e31ii6l<div class="muted" style="font-size:12px;">public-6th-guangzhou-redis-01</div></td>
+          <td>ap-guangzhou</td>
+          <td>-</td>
+          <td><span class="tag-cell">云数据库（Redis）利用率不足</span></td>
+          <td>4.0GB → 2.0GB</td>
+          <td>降至2.0GB</td>
+          <td class="num">¥73</td>
+          <td class="num saving-cell">¥29</td>
+          <td>andynni</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="shinyxusun" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 Medium Priority</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-4uvgzxny<div class="muted" style="font-size:12px;">孙旭编译C</div></td>
+          <td>ap-guangzhou</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>4核8GB → 2核4GB</td>
+          <td>降至 2核4GB</td>
+          <td class="num">¥33</td>
+          <td class="num saving-cell">¥16</td>
+          <td>shinyxusun</td>
+        </tr>
+        
+        <tr data-severity="low" data-product="CVM 云服务器"
+            data-owner="-" data-optimize-path="定时关机">
+          <td><span class="sev sev-low">🟢 Low Risk</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-hw0ci1c2<div class="muted" style="font-size:12px;">Int-Pre-Devops-7th-guangzhou-cvm-Jumpserver1</div></td>
+          <td>ap-guangzhou</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">定时关机</span></td>
+          <td>建议配置定时关机（夜间/周末停机，预计省57%）</td>
+          <td>配置定时关机策略</td>
+          <td class="num">¥18</td>
+          <td class="num saving-cell">¥10</td>
+          <td>-</td>
+        </tr>
+        
+        <tr data-severity="low" data-product="CVM 云服务器"
+            data-owner="-" data-optimize-path="定时关机">
+          <td><span class="sev sev-low">🟢 Low Risk</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-04t1gxqa<div class="muted" style="font-size:12px;">Int-Pre-Devops-7th-guangzhou-cvm-rancher-ladp</div></td>
+          <td>ap-guangzhou</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">定时关机</span></td>
+          <td>建议配置定时关机（夜间/周末停机，预计省57%）</td>
+          <td>配置定时关机策略</td>
+          <td class="num">¥18</td>
+          <td class="num saving-cell">¥10</td>
+          <td>-</td>
+        </tr>
+        
+        <tr data-severity="low" data-product="CVM 云服务器"
+            data-owner="-" data-optimize-path="定时关机">
+          <td><span class="sev sev-low">🟢 Low Risk</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-ocaydhqe<div class="muted" style="font-size:12px;">Int-Pre-Devops-7th-guangzhou-cvm-openvpn</div></td>
+          <td>ap-guangzhou</td>
+          <td>2核2GB</td>
+          <td><span class="tag-cell">定时关机</span></td>
+          <td>建议配置定时关机（夜间/周末停机，预计省57%）</td>
+          <td>配置定时关机策略</td>
+          <td class="num">¥9</td>
+          <td class="num saving-cell">¥5</td>
+          <td>-</td>
+        </tr>
+        
+        </tbody>
+      </table>
+    </div>
+    <div style="text-align:right; margin-top:8px;">
+      <span class="filter-result-count" id="filter-count"></span>
+    </div>
+    
+</div>
+<div class="card">
+<h2 class="card-title">By Product</h2>
+
+    <div class="scroll-table">
+      <table>
+        <thead><tr><th>Product</th><th>Flagged Resources</th><th>Est. Monthly Savings</th><th>Share</th></tr></thead>
+        <tbody>
+        <tr>
+          <td>CVM 云服务器</td>
+          <td class="num">11</td>
+          <td class="num saving-cell">¥398</td>
+          <td class="num">44.0%</td>
+        </tr>
+        
+        <tr>
+          <td>ES Elasticsearch</td>
+          <td class="num">2</td>
+          <td class="num saving-cell">¥182</td>
+          <td class="num">20.1%</td>
+        </tr>
+        
+        <tr>
+          <td>MongoDB</td>
+          <td class="num">2</td>
+          <td class="num saving-cell">¥167</td>
+          <td class="num">18.5%</td>
+        </tr>
+        
+        <tr>
+          <td>MySQL</td>
+          <td class="num">2</td>
+          <td class="num saving-cell">¥128</td>
+          <td class="num">14.2%</td>
+        </tr>
+        
+        <tr>
+          <td>Redis</td>
+          <td class="num">1</td>
+          <td class="num saving-cell">¥29</td>
+          <td class="num">3.2%</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    
+</div>
+<div class="card">
+<h2 class="card-title">Insights</h2>
+<div class="insight-card danger"><span class="level">CRITICAL</span>🔴 发现 5 个严重浪费资源（停机按量/无后端CLB/按量长期运行等），预计月省 ¥241，建议立即处理</div><div class="insight-card "><span class="level">INFO</span>📊 CVM 云服务器 优化空间最大（停机按量计费3个、云服务器（CVM）实例利用率不足3个、按量长期运行2个、非生产可定时关机3个），预计月省 ¥398</div><div class="insight-card "><span class="level">INFO</span>💻 11 台 CVM 有优化空间（停机按量计费3台、云服务器（CVM）实例利用率不足3台、按量长期运行2台、非生产可定时关机3台），预计月省 ¥398</div><div class="insight-card warn"><span class="level">NOTICE</span>🗄 数据库优化空间：，预计月省 ¥324</div><div class="insight-card "><span class="level">INFO</span>📈 优化路径排名：Elasticsearch 集群利用率不足(182个·¥182)、云数据库（MongoDB）利用率不足(167个·¥167)、按量长期运行(142个·¥142)、云服务器（CVM）实例利用率不足(132个·¥132)、云数据库（MySQL）利用率不足(128个·¥128)</div><div class="insight-card "><span class="level">INFO</span>⚡ 执行建议：严重+低风险项预计月省 ¥266（占比29%），可立即执行</div><div class="insight-card "><span class="level">INFO</span>🛡 1 个关键资源已自动豁免闲置判定（主备/只读/副本），不做优化建议</div><div class="insight-card "><span class="level">INFO</span>📋 1 类产品暂无资源级扫描 API（Oceanus 流计算|p_oceanus），仅展示账单费用</div>
+</div>
+</div>
+<script>
+const COSTOPT_CHART_DATA = {"severity": {"labels": ["🔴 Critical Waste", "🟠 High Priority", "🟠 Recommended", "🟡 Medium Priority", "🟢 Low Risk"], "counts": [5, 0, 0, 10, 3], "savings": [241, 0, 0, 638, 25], "colors": ["#ff6b6b", "#fbbf24", "#fb9224", "#facc15", "#4ade80"]}, "products": {"labels": ["CVM 云服务器", "ES Elasticsearch", "MongoDB", "MySQL", "Redis"], "savings": [398, 182, 167, 128, 29]}};
+const COSTOPT_I18N = {"tooltipMid": " items · est. ¥", "prodLabel": "Est. Monthly Savings (¥)", "showingPrefix": "Showing ", "showingSuffix": ""};
+
+        (function(){
+          if (typeof Chart === 'undefined') return;
+          Chart.defaults.color = 'rgba(245,246,251,0.7)';
+          Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+          Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif';
+          const sev = COSTOPT_CHART_DATA.severity;
+          const prod = COSTOPT_CHART_DATA.products;
+          new Chart(document.getElementById('sevChart'), {
+            type: 'doughnut',
+            data: {
+              labels: sev.labels,
+              datasets: [{ data: sev.counts, backgroundColor: sev.colors, borderColor: 'rgba(0,0,0,0)', borderWidth: 0 }]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false, cutout: '60%',
+              plugins: { legend: { position: 'right' }, tooltip: { callbacks: {
+                label: function(ctx){
+                  const i = ctx.dataIndex;
+                  return ctx.label + ': ' + ctx.parsed + COSTOPT_I18N.tooltipMid + sev.savings[i].toLocaleString();
+                }
+              } } }
+            }
+          });
+          new Chart(document.getElementById('productChart'), {
+            type: 'bar',
+            data: {
+              labels: prod.labels,
+              datasets: [{
+                label: COSTOPT_I18N.prodLabel,
+                data: prod.savings,
+                backgroundColor: 'rgba(74,222,128,0.7)',
+                borderColor: 'rgba(74,222,128,0.9)',
+                borderWidth: 1, borderRadius: 4
+              }]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              scales: {
+                x: { grid: { display: false } },
+                y: { ticks: { callback: v => '¥' + Number(v).toLocaleString() } }
+              },
+              plugins: { legend: { display: false } }
+            }
+          });
+        })();
+
+        // ─── 表格筛选逻辑 ───
+        (function(){
+          function getCheckedValues(cls) {
+            return Array.from(document.querySelectorAll('.' + cls + ':checked')).map(cb => cb.value);
+          }
+          function setBtnActive(btnId, active) {
+            const btn = document.getElementById(btnId);
+            if (btn) btn.classList.toggle('active', active);
+          }
+          window.toggleColFilter = function(filterId, btn) {
+            const dd = document.getElementById(filterId + '-dropdown');
+            if (!dd) return;
+            const wasOpen = dd.classList.contains('open');
+            document.querySelectorAll('.col-filter-dropdown.open').forEach(d => d.classList.remove('open'));
+            document.querySelectorAll('.col-filter-btn.active').forEach(b => b.classList.remove('active'));
+            if (!wasOpen) {
+              dd.classList.add('open');
+              btn.classList.add('active');
+            }
+          };
+          window.selectAll = function(prefix) {
+            document.querySelectorAll('.filter-' + prefix).forEach(cb => cb.checked = true);
+            applyFilters();
+          };
+          window.clearFilter = function(prefix) {
+            document.querySelectorAll('.filter-' + prefix).forEach(cb => cb.checked = false);
+            applyFilters();
+          };
+          window.applyFilters = function() {
+            const sevChecked = getCheckedValues('filter-sev');
+            const prodChecked = getCheckedValues('filter-prod');
+            const ownerChecked = getCheckedValues('filter-owner');
+            const pathChecked = getCheckedValues('filter-path');
+
+            setBtnActive('sev-btn', sevChecked.length > 0);
+            setBtnActive('prod-btn', prodChecked.length > 0);
+            setBtnActive('owner-btn', ownerChecked.length > 0);
+            setBtnActive('path-btn', pathChecked.length > 0);
+
+            const rows = document.querySelectorAll('#findings-table tbody tr');
+            let visible = 0;
+            rows.forEach(row => {
+              const sev = row.dataset.severity || '';
+              const prod = row.dataset.product || '';
+              const owner = row.dataset.owner || '';
+              const path = row.dataset.optimizePath || '';
+
+              let show = true;
+              if (sevChecked.length > 0 && !sevChecked.includes(sev)) show = false;
+              if (prodChecked.length > 0 && !prodChecked.includes(prod)) show = false;
+              if (ownerChecked.length > 0 && !ownerChecked.includes(owner)) show = false;
+              if (pathChecked.length > 0 && !pathChecked.includes(path)) show = false;
+
+              row.style.display = show ? '' : 'none';
+              if (show) visible++;
+            });
+
+            const total = rows.length;
+            const cntEl = document.getElementById('filter-count');
+            if (cntEl) cntEl.textContent = COSTOPT_I18N.showingPrefix + visible + ' / ' + total + COSTOPT_I18N.showingSuffix;
+          };
+
+          // 监听 checkbox 变化
+          ['filter-sev', 'filter-prod', 'filter-owner', 'filter-path'].forEach(cls => {
+            document.querySelectorAll('.' + cls).forEach(cb => {
+              cb.addEventListener('change', applyFilters);
+            });
+          });
+
+          // 点击外部关闭下拉
+          document.addEventListener('click', function(e) {
+            if (!e.target.closest('.col-filter-wrap') && !e.target.closest('.col-filter-dropdown')) {
+              document.querySelectorAll('.col-filter-dropdown.open').forEach(d => d.classList.remove('open'));
+              document.querySelectorAll('.col-filter-btn.active').forEach(b => b.classList.remove('active'));
+            }
+          });
+
+          applyFilters();
+        })();
+        
+</script>
+</body></html>

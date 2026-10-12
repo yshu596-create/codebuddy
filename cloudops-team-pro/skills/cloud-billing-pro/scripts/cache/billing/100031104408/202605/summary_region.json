@@ -1,0 +1,66 @@
+{
+  "Ready": 1,
+  "SummaryOverview": [
+    {
+      "RegionId": "1",
+      "RealTotalCost": "18604.09076414",
+      "TotalCost": "45424.28378028",
+      "CashPayAmount": "2.50403494",
+      "IncentivePayAmount": "18601.58672920",
+      "VoucherPayAmount": "0.00000000",
+      "TransferPayAmount": "0.00000000",
+      "BillMonth": "2026-05",
+      "RealTotalCostRatio": "96.30",
+      "RegionName": "华南地区（广州）"
+    },
+    {
+      "RegionId": "47",
+      "RealTotalCost": "395.07908930",
+      "TotalCost": "712.71687714",
+      "CashPayAmount": "-2.70956827",
+      "IncentivePayAmount": "397.78865757",
+      "VoucherPayAmount": "0.00000000",
+      "TransferPayAmount": "0.00000000",
+      "BillMonth": "2026-05",
+      "RealTotalCostRatio": "2.05",
+      "RegionName": "其他地区（其他）"
+    },
+    {
+      "RegionId": "4",
+      "RealTotalCost": "239.53689422",
+      "TotalCost": "268.41593210",
+      "CashPayAmount": "0.04295921",
+      "IncentivePayAmount": "239.49393501",
+      "VoucherPayAmount": "0.00000000",
+      "TransferPayAmount": "0.00000000",
+      "BillMonth": "2026-05",
+      "RealTotalCostRatio": "1.24",
+      "RegionName": "华东地区（上海）"
+    },
+    {
+      "RegionId": "8",
+      "RealTotalCost": "79.38170253",
+      "TotalCost": "137.30422272",
+      "CashPayAmount": "0.12102431",
+      "IncentivePayAmount": "79.26067822",
+      "VoucherPayAmount": "0.00000000",
+      "TransferPayAmount": "0.00000000",
+      "BillMonth": "2026-05",
+      "RealTotalCostRatio": "0.41",
+      "RegionName": "华北地区（北京）"
+    },
+    {
+      "RegionId": "33",
+      "RealTotalCost": "0.04154981",
+      "TotalCost": "0.06078981",
+      "CashPayAmount": "0.04154981",
+      "IncentivePayAmount": "0.00000000",
+      "VoucherPayAmount": "0.00000000",
+      "TransferPayAmount": "0.00000000",
+      "BillMonth": "2026-05",
+      "RealTotalCostRatio": "0.00",
+      "RegionName": "华东地区（南京）"
+    }
+  ],
+  "RequestId": "fd535e4a-28b9-4106-a244-b9c56142741e"
+}

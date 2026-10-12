@@ -1,0 +1,197 @@
+{
+  "name": "cloudops-team-pro",
+  "version": "2.0.0",
+  "description": "Cloud Ops AIOps expert team (Pro edition). A lead manager routes requests by intent to specialists: Tencent Cloud billing analysis, Huawei Cloud billing analysis, audit forensics, security inspection, cost optimization, resource inventory (sub-accounts / CVM / GPU CVM / COS / TKE node specs and more, with an inventory dashboard), and architecture analysis (layered topology diagram plus an agent-driven architecture assessment: health score, A–F grade, multi-dimension review, risks and optimization recommendations), with fault diagnosis, resource lifecycle management, and cross-account architecture comparison / IaC reverse-generation on the roadmap. All specialists share the same standards: bilingual ZH/EN output, multi-account concurrent fan-out, SSM+KMS credential sourcing, and one-click PPT export. Forked from cloudops-team v1.4.7 as an isolated copy (all internal agent IDs and skill names suffixed with -pro) so it can run side by side with the original for extended feature development. Business AK/SK are never placed in environment variables — they are stored encrypted in Tencent Cloud SSM under the naming convention cloudops/{cloud}/{project} (e.g. cloudops/tencent/YX); the runtime only holds a read-only SSM runner key and resolves credentials in-process per (cloud, project). The team lead provides an adaptive cloud + project picker via the shared cloudops-accounts-pro skill — Step 1 / Step 2 only render when actually ambiguous (single cloud or single project auto-skips), Step 2 supports multi-select up to 3 projects to fan-out parallel specialist runs.",
+  "author": {
+    "name": "fangxing",
+    "email": "fangxing@tencent.com"
+  },
+  "agents": [
+    "./agents/cloudops-team-pro-team-lead.md",
+    "./agents/cloud-billing-analyst-pro.md",
+    "./agents/huawei-billing-analyst-pro.md",
+    "./agents/cloud-auditor-pro.md",
+    "./agents/cloud-inspector-pro.md",
+    "./agents/cloud-cost-optimizer-pro.md",
+    "./agents/cloud-architect-pro.md",
+    "./agents/cloud-resource-manager-pro.md"
+  ],
+  "skills": [
+    "./skills/cloudops-accounts-pro",
+    "./skills/cloud-billing-pro",
+    "./skills/cloud-billing-huawei-pro",
+    "./skills/cloud-auditor-pro",
+    "./skills/cloud-inspector-pro",
+    "./skills/cloud-costopt-pro",
+    "./skills/cloud-report-pptx-pro",
+    "./skills/cloud-resource-pro"
+  ],
+  "expertType": "team",
+  "agentName": "cloudops-team-pro-team-lead",
+  "teamInfo": {
+    "leadAgent": "cloudops-team-pro-team-lead",
+    "memberAgents": [
+      "cloud-billing-analyst-pro",
+      "huawei-billing-analyst-pro",
+      "cloud-auditor-pro",
+      "cloud-inspector-pro",
+      "cloud-cost-optimizer-pro",
+      "cloud-architect-pro",
+      "cloud-resource-manager-pro"
+    ]
+  },
+  "displayName": {
+    "en": "Cloud Ops Team Pro",
+    "zh": "云运维专家团 Pro"
+  },
+  "profession": {
+    "en": "Cloud Ops Team Pro",
+    "zh": "云运维专家团 Pro"
+  },
+  "displayDescription": {
+    "en": "One-stop cloud ops AIOps team (Pro). Say it in plain words — the manager auto-dispatches across billing, audit, inspection, cost, resource inventory, and architecture analysis (topology + assessment), all bilingual with PPT export.",
+    "zh": "一站式云运维 AIOps 专家团 Pro。一句话说需求，自动派单：账单、审计、巡检、降本、资源清点、架构分析（拓扑图+评估），全员中英双语、可导出 PPT。"
+  },
+  "avatar": "avatars/team.png",
+  "categoryId": "02-Engineering",
+  "defaultInitPrompt": {
+    "zh": "看一下上月云账单",
+    "en": "Show me last month's cloud bill"
+  },
+  "plugin": "cloudops-team-pro",
+  "tags": [
+    {
+      "en": "Billing Analysis",
+      "zh": "云账单分析"
+    },
+    {
+      "en": "Resource Inventory",
+      "zh": "云资源清点"
+    },
+    {
+      "en": "Security Inspection",
+      "zh": "云安全巡检"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "en": "Show me last month's cloud bill",
+      "zh": "看一下上月云账单"
+    },
+    {
+      "en": "How many CVMs and GPU CVMs are in my account?",
+      "zh": "我账号下有多少 CVM、多少 GPU CVM"
+    },
+    {
+      "en": "Run a full security inspection on my cloud account",
+      "zh": "全面巡检我的云账号"
+    }
+  ],
+  "members": [
+    {
+      "id": "cloudops-team-pro-team-lead",
+      "displayName": {
+        "en": "Yun Zhanggui",
+        "zh": "云掌柜"
+      },
+      "profession": {
+        "en": "Cloud Ops Manager",
+        "zh": "云运维经理"
+      },
+      "avatar": "avatars/cloudops-team-pro-team-lead.png",
+      "role": "lead"
+    },
+    {
+      "id": "cloud-billing-analyst-pro",
+      "displayName": {
+        "en": "Bill Buddy",
+        "zh": "老账"
+      },
+      "profession": {
+        "en": "Tencent Cloud Billing Analyst",
+        "zh": "腾讯云账单分析专家"
+      },
+      "avatar": "avatars/cloud-billing-analyst-pro.png",
+      "role": "member"
+    },
+    {
+      "id": "huawei-billing-analyst-pro",
+      "displayName": {
+        "en": "Huawei Bill Buddy",
+        "zh": "华账"
+      },
+      "profession": {
+        "en": "Huawei Cloud Billing Analyst",
+        "zh": "华为云账单分析专家"
+      },
+      "avatar": "avatars/huawei-billing-analyst-pro.png",
+      "role": "member"
+    },
+    {
+      "id": "cloud-auditor-pro",
+      "displayName": {
+        "en": "Cloud Auditor",
+        "zh": "云审计官"
+      },
+      "profession": {
+        "en": "Cloud Audit Trail Inspector",
+        "zh": "云审计分析师"
+      },
+      "avatar": "avatars/cloud-auditor-pro.png",
+      "role": "member"
+    },
+    {
+      "id": "cloud-inspector-pro",
+      "displayName": {
+        "en": "Cloud Inspector",
+        "zh": "云巡检"
+      },
+      "profession": {
+        "en": "Cloud Security Inspector",
+        "zh": "云安全巡检工程师"
+      },
+      "avatar": "avatars/cloud-inspector-pro.png",
+      "role": "member"
+    },
+    {
+      "id": "cloud-cost-optimizer-pro",
+      "displayName": {
+        "en": "Cloud Cost Doctor",
+        "zh": "云降本医生"
+      },
+      "profession": {
+        "en": "Cloud Cost Optimization Expert",
+        "zh": "云降本优化专家"
+      },
+      "avatar": "avatars/cloud-cost-optimizer-pro.png",
+      "role": "member"
+    },
+    {
+      "id": "cloud-architect-pro",
+      "displayName": {
+        "en": "Cloud Architect",
+        "zh": "云图"
+      },
+      "profession": {
+        "en": "Cloud Architecture Analyst",
+        "zh": "云架构分析师"
+      },
+      "avatar": "avatars/cloud-architect-pro.png",
+      "role": "member"
+    },
+    {
+      "id": "cloud-resource-manager-pro",
+      "displayName": {
+        "en": "Cloud Steward",
+        "zh": "云管家"
+      },
+      "profession": {
+        "en": "Cloud Resource Manager",
+        "zh": "云资源管理专家"
+      },
+      "avatar": "avatars/cloud-resource-manager-pro.png",
+      "role": "member"
+    }
+  ],
+  "sharedBy": "andyyfang"
+}

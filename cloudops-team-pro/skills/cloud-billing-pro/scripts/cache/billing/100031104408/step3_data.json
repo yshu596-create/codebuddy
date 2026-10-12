@@ -1,0 +1,904 @@
+{
+  "account_name": "主账号-100031104408",
+  "analysis_month": "202605",
+  "comparison_month": "202604",
+  "uin": "100031104408",
+  "budget": "",
+  "totals": {
+    "curr_total": 19317,
+    "prev_total": 19024,
+    "diff": 293,
+    "ratio_pct": 1.5,
+    "icon": "📈"
+  },
+  "top_products": [
+    {
+      "name": "弹性MapReduce",
+      "prev_cost": 2878,
+      "curr_cost": 2878,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "14.90"
+    },
+    {
+      "name": "T-Sec-Web应用防火墙（WAF）",
+      "prev_cost": 2626,
+      "curr_cost": 2626,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "13.60"
+    },
+    {
+      "name": "云服务器CVM",
+      "prev_cost": 1736,
+      "curr_cost": 1758,
+      "diff_str": "📈 +¥22",
+      "ratio_str": "+1.3%",
+      "ratio_in_total": "9.10"
+    },
+    {
+      "name": "T-Sec-密钥管理系统(KMS)",
+      "prev_cost": 1681,
+      "curr_cost": 1681,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "8.70"
+    },
+    {
+      "name": "流计算Oceanus",
+      "prev_cost": 1544,
+      "curr_cost": 1544,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "7.99"
+    },
+    {
+      "name": "云数据库TencentDB for MongoDB",
+      "prev_cost": 1405,
+      "curr_cost": 1405,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "7.27"
+    },
+    {
+      "name": "NAT网关",
+      "prev_cost": 733,
+      "curr_cost": 758,
+      "diff_str": "📈 +¥25",
+      "ratio_str": "+3.4%",
+      "ratio_in_total": "3.92"
+    },
+    {
+      "name": "腾讯云数据仓库 TCHouse-C",
+      "prev_cost": 619,
+      "curr_cost": 619,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "3.21"
+    },
+    {
+      "name": "Elasticsearch Service",
+      "prev_cost": 523,
+      "curr_cost": 523,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "2.70"
+    },
+    {
+      "name": "T-Sec-云防火墙(CFW)",
+      "prev_cost": 475,
+      "curr_cost": 475,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "2.46"
+    },
+    {
+      "name": "云硬盘快照Snapshot",
+      "prev_cost": 453,
+      "curr_cost": 468,
+      "diff_str": "📈 +¥15",
+      "ratio_str": "+3.3%",
+      "ratio_in_total": "2.42"
+    },
+    {
+      "name": "消息服务CKafka",
+      "prev_cost": 466,
+      "curr_cost": 466,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "2.41"
+    },
+    {
+      "name": "云数据库MySQL",
+      "prev_cost": 448,
+      "curr_cost": 448,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "2.32"
+    },
+    {
+      "name": "负载均衡",
+      "prev_cost": 417,
+      "curr_cost": 430,
+      "diff_str": "📈 +¥13",
+      "ratio_str": "+3.1%",
+      "ratio_in_total": "2.22"
+    },
+    {
+      "name": "云数据库PostgreSQL",
+      "prev_cost": 403,
+      "curr_cost": 403,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "2.09"
+    },
+    {
+      "name": "腾讯云BI",
+      "prev_cost": 391,
+      "curr_cost": 391,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "2.02"
+    },
+    {
+      "name": "云硬盘CBS",
+      "prev_cost": 376,
+      "curr_cost": 379,
+      "diff_str": "+3",
+      "ratio_str": "+0.8%",
+      "ratio_in_total": "1.96"
+    },
+    {
+      "name": "COS 对象存储",
+      "prev_cost": 331,
+      "curr_cost": 341,
+      "diff_str": "📈 +¥10",
+      "ratio_str": "+3.0%",
+      "ratio_in_total": "1.77"
+    },
+    {
+      "name": "容器服务 TKE",
+      "prev_cost": 310,
+      "curr_cost": 320,
+      "diff_str": "📈 +¥10",
+      "ratio_str": "+3.2%",
+      "ratio_in_total": "1.66"
+    },
+    {
+      "name": "云联网CCN",
+      "prev_cost": 311,
+      "curr_cost": 313,
+      "diff_str": "+2",
+      "ratio_str": "+0.6%",
+      "ratio_in_total": "1.62"
+    },
+    {
+      "name": "数据湖计算",
+      "prev_cost": 271,
+      "curr_cost": 280,
+      "diff_str": "+9",
+      "ratio_str": "+3.3%",
+      "ratio_in_total": "1.45"
+    },
+    {
+      "name": "TSE 注册配置中心",
+      "prev_cost": 208,
+      "curr_cost": 208,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "1.08"
+    },
+    {
+      "name": "云监控",
+      "prev_cost": 202,
+      "curr_cost": 204,
+      "diff_str": "+2",
+      "ratio_str": "+1.0%",
+      "ratio_in_total": "1.06"
+    },
+    {
+      "name": "腾讯云代码助手",
+      "prev_cost": 0,
+      "curr_cost": 192,
+      "diff_str": "+192",
+      "ratio_str": "+0.0%",
+      "ratio_in_total": "1.00"
+    },
+    {
+      "name": "腾讯云TI平台TI-ONE",
+      "prev_cost": 75,
+      "curr_cost": 77,
+      "diff_str": "+2",
+      "ratio_str": "+2.7%",
+      "ratio_in_total": "0.40"
+    },
+    {
+      "name": "腾讯云分布式缓存数据库",
+      "prev_cost": 73,
+      "curr_cost": 73,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "0.38"
+    },
+    {
+      "name": "日志服务CLS",
+      "prev_cost": 44,
+      "curr_cost": 46,
+      "diff_str": "+2",
+      "ratio_str": "+4.5%",
+      "ratio_in_total": "0.24"
+    },
+    {
+      "name": "T-Sec-凭据管理系统（SSM）",
+      "prev_cost": 6,
+      "curr_cost": 6,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "0.03"
+    },
+    {
+      "name": "月度计费精度差异",
+      "prev_cost": 4,
+      "curr_cost": 2,
+      "diff_str": "-2",
+      "ratio_str": "-50.0%",
+      "ratio_in_total": "0.01"
+    },
+    {
+      "name": "腾讯云智能体开发平台",
+      "prev_cost": 14,
+      "curr_cost": 2,
+      "diff_str": "📉 -¥12",
+      "ratio_str": "-85.7%",
+      "ratio_in_total": "0.01"
+    },
+    {
+      "name": "公网 IP",
+      "prev_cost": 1,
+      "curr_cost": 1,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "0.00"
+    },
+    {
+      "name": "TDSQL-C MySQL版",
+      "prev_cost": 0,
+      "curr_cost": 0,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "0.00"
+    },
+    {
+      "name": "数据万象CI",
+      "prev_cost": 0,
+      "curr_cost": 0,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "0.00"
+    },
+    {
+      "name": "云函数SCF",
+      "prev_cost": 0,
+      "curr_cost": 0,
+      "diff_str": "— 持平",
+      "ratio_str": "— 持平",
+      "ratio_in_total": "0.00"
+    }
+  ],
+  "top_regions": [
+    {
+      "name": "华南地区（广州）",
+      "cost": 18604,
+      "ratio_pct": "96.3%"
+    },
+    {
+      "name": "其他地区（其他）",
+      "cost": 395,
+      "ratio_pct": "2.0%"
+    },
+    {
+      "name": "华东地区（上海）",
+      "cost": 240,
+      "ratio_pct": "1.2%"
+    },
+    {
+      "name": "华北地区（北京）",
+      "cost": 79,
+      "ratio_pct": "0.4%"
+    },
+    {
+      "name": "华东地区（南京）",
+      "cost": 0,
+      "ratio_pct": "0.0%"
+    }
+  ],
+  "product_trend": {
+    "弹性MapReduce": {
+      "icon": "➡️",
+      "label": "平稳",
+      "costs_by_month": {
+        "202602": 2878,
+        "202603": 2878,
+        "202604": 2878,
+        "202605": 2878
+      }
+    },
+    "T-Sec-Web应用防火墙（WAF）": {
+      "icon": "➡️",
+      "label": "平稳",
+      "costs_by_month": {
+        "202602": 2626,
+        "202603": 2626,
+        "202604": 2626,
+        "202605": 2626
+      }
+    },
+    "云服务器CVM": {
+      "icon": "➡️",
+      "label": "平稳",
+      "costs_by_month": {
+        "202602": 1693,
+        "202603": 1758,
+        "202604": 1736,
+        "202605": 1758
+      }
+    },
+    "T-Sec-密钥管理系统(KMS)": {
+      "icon": "➡️",
+      "label": "平稳",
+      "costs_by_month": {
+        "202602": 1681,
+        "202603": 1681,
+        "202604": 1681,
+        "202605": 1681
+      }
+    },
+    "流计算Oceanus": {
+      "icon": "➡️",
+      "label": "平稳",
+      "costs_by_month": {
+        "202602": 1544,
+        "202603": 1544,
+        "202604": 1544,
+        "202605": 1544
+      }
+    },
+    "云数据库TencentDB for MongoDB": {
+      "icon": "➡️",
+      "label": "平稳",
+      "costs_by_month": {
+        "202602": 1405,
+        "202603": 1405,
+        "202604": 1405,
+        "202605": 1405
+      }
+    },
+    "NAT网关": {
+      "icon": "📊",
+      "label": "波动",
+      "costs_by_month": {
+        "202602": 684,
+        "202603": 758,
+        "202604": 733,
+        "202605": 758
+      }
+    },
+    "腾讯云数据仓库 TCHouse-C": {
+      "icon": "➡️",
+      "label": "平稳",
+      "costs_by_month": {
+        "202602": 619,
+        "202603": 619,
+        "202604": 619,
+        "202605": 619
+      }
+    },
+    "Elasticsearch Service": {
+      "icon": "➡️",
+      "label": "平稳",
+      "costs_by_month": {
+        "202602": 523,
+        "202603": 523,
+        "202604": 523,
+        "202605": 523
+      }
+    },
+    "T-Sec-云防火墙(CFW)": {
+      "icon": "📊",
+      "label": "波动",
+      "costs_by_month": {
+        "202602": 1855,
+        "202603": 1855,
+        "202604": 475,
+        "202605": 475
+      }
+    }
+  },
+  "trend_months_ordered": [
+    "202602",
+    "202603",
+    "202604",
+    "202605"
+  ],
+  "summary_highlights": {
+    "max_growth": {
+      "ResourceId": "1318026712_gz",
+      "ProductName": "云硬盘快照",
+      "Diff": 15,
+      "Ratio": 3.3
+    },
+    "most_expensive": {
+      "ResourceId": "waf_2kxr8ws00ernu313",
+      "ProductName": "Web应用防火墙-高级版",
+      "RealTotalCost": 2626
+    },
+    "top_products_summary": {
+      "p1_name": "弹性MapReduce",
+      "p1_ratio": "14.90",
+      "p2_name": "T-Sec-Web应用防火墙（WAF）",
+      "p2_ratio": "13.60",
+      "combined_ratio": 28.5
+    }
+  },
+  "no_discount_products": [],
+  "insights": [
+    {
+      "level": "🟡",
+      "text": "**单地域高度集中**: 华南地区（广州） 占 96.3%，单点风险"
+    }
+  ],
+  "top10_resources": [
+    {
+      "ResourceId": "waf_2kxr8ws00ernu313",
+      "ProductName": "Web应用防火墙-高级版",
+      "ProductCode": "sp_wsm_waf_premium",
+      "RealTotalCost": 2626
+    },
+    {
+      "ResourceId": "KMS-Prepaid-78hp0i70",
+      "ProductName": "密钥管理系统套餐",
+      "ProductCode": "sp_kms_pg",
+      "RealTotalCost": 1681
+    },
+    {
+      "ResourceId": "cluster-34vucxuj",
+      "ProductName": "流计算Oceanus-独享模式",
+      "ProductCode": "sp_oceanus_exclusive",
+      "RealTotalCost": 1544
+    },
+    {
+      "ResourceId": "emr-vm-d1nq5x1l",
+      "ProductName": "弹性MapReduce-标准型SA3",
+      "ProductCode": "sp_emr_sa3",
+      "RealTotalCost": 653
+    },
+    {
+      "ResourceId": "emr-vm-pztuhnal",
+      "ProductName": "弹性MapReduce-标准型SA3",
+      "ProductCode": "sp_emr_sa3",
+      "RealTotalCost": 653
+    },
+    {
+      "ResourceId": "cfw-umf9jn5kyfilk0t4ke0",
+      "ProductName": "云防火墙/SaaS服务",
+      "ProductCode": "sp_cloudfirewall_svv1",
+      "RealTotalCost": 475
+    },
+    {
+      "ResourceId": "1318026712_gz",
+      "ProductName": "云硬盘快照",
+      "ProductCode": "sp_snapshot_normal",
+      "RealTotalCost": 468
+    },
+    {
+      "ResourceId": "cdwch-vgvibtzc",
+      "ProductName": "腾讯云数据仓库 TCHouse-C 标准版",
+      "ProductCode": "sp_cdwch_standard",
+      "RealTotalCost": 453
+    },
+    {
+      "ResourceId": "TCBI11000311044081734339290930",
+      "ProductName": "腾讯云BI-基础版",
+      "ProductCode": "sp_bi_advanced",
+      "RealTotalCost": 391
+    },
+    {
+      "ResourceId": "ins-81ere7qi",
+      "ProductName": "云服务器CVM-标准型SA3",
+      "ProductCode": "sp_cvm_sa3",
+      "RealTotalCost": 382
+    }
+  ],
+  "resource_diff": {
+    "growth": {
+      "items": [
+        {
+          "ResourceId": "1318026712_gz",
+          "ProductName": "云硬盘快照",
+          "ProductCode": "sp_snapshot_normal",
+          "PrevCost": 453,
+          "CurrCost": 468,
+          "Diff": 15,
+          "Ratio": 3.3,
+          "Tags": {},
+          "IsNearNew": false,
+          "_tags": {
+            "business": "未打标"
+          }
+        },
+        {
+          "ResourceId": "nat-npxpyrqs",
+          "ProductName": "NAT网关",
+          "ProductCode": "sp_nat",
+          "PrevCost": 244,
+          "CurrCost": 253,
+          "Diff": 9,
+          "Ratio": 3.7,
+          "Tags": {
+            "business": "TSP"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "TSP"
+          }
+        },
+        {
+          "ResourceId": "dlc3619-100031104408-1690595724-100017307912-1304028854",
+          "ProductName": "数据湖存储",
+          "ProductCode": "sp_dlc_storage",
+          "PrevCost": 271,
+          "CurrCost": 280,
+          "Diff": 9,
+          "Ratio": 3.3,
+          "Tags": {},
+          "IsNearNew": false,
+          "_tags": {
+            "business": "未打标"
+          }
+        },
+        {
+          "ResourceId": "nat-kf9advzy",
+          "ProductName": "NAT网关",
+          "ProductCode": "sp_nat",
+          "PrevCost": 244,
+          "CurrCost": 253,
+          "Diff": 9,
+          "Ratio": 3.7,
+          "Tags": {
+            "business": "Devops"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "Devops"
+          }
+        },
+        {
+          "ResourceId": "nat-qoij2hso",
+          "ProductName": "NAT网关",
+          "ProductCode": "sp_nat",
+          "PrevCost": 244,
+          "CurrCost": 253,
+          "Diff": 9,
+          "Ratio": 3.7,
+          "Tags": {
+            "business": "TCS"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "TCS"
+          }
+        },
+        {
+          "ResourceId": "ccn-1f6h216t_vpc-4on6rowf",
+          "ProductName": "云联网网络连接实例费",
+          "ProductCode": "sp_ccn_connecting_instance",
+          "PrevCost": 38,
+          "CurrCost": 47,
+          "Diff": 9,
+          "Ratio": 23.7,
+          "Tags": {
+            "business": "TSP"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "TSP"
+          }
+        },
+        {
+          "ResourceId": "cls-13kxo9b2",
+          "ProductName": "容器服务TKE",
+          "ProductCode": "sp_011691_tke",
+          "PrevCost": 234,
+          "CurrCost": 242,
+          "Diff": 8,
+          "Ratio": 3.4,
+          "Tags": {
+            "business": "TSP"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "TSP"
+          }
+        },
+        {
+          "ResourceId": "ins-p1iw4h50",
+          "ProductName": "云服务器CVM-标准型SA3",
+          "ProductCode": "sp_cvm_sa3",
+          "PrevCost": 153,
+          "CurrCost": 158,
+          "Diff": 5,
+          "Ratio": 3.3,
+          "Tags": {
+            "business": "TSP"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "TSP"
+          }
+        },
+        {
+          "ResourceId": "ins-jrndnn0i",
+          "ProductName": "云服务器CVM-标准型SA3",
+          "ProductCode": "sp_cvm_sa3",
+          "PrevCost": 153,
+          "CurrCost": 158,
+          "Diff": 5,
+          "Ratio": 3.3,
+          "Tags": {
+            "business": "TSP"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "TSP"
+          }
+        },
+        {
+          "ResourceId": "cls-n6e4x7jy",
+          "ProductName": "容器服务TKE",
+          "ProductCode": "sp_011691_tke",
+          "PrevCost": 76,
+          "CurrCost": 78,
+          "Diff": 2,
+          "Ratio": 2.6,
+          "Tags": {
+            "business": "TSP"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "TSP"
+          }
+        },
+        {
+          "ResourceId": "tio-7rgt6tx7qkxs",
+          "ProductName": "云硬盘后付费",
+          "ProductCode": "sp_tio_cloudcbspost",
+          "PrevCost": 75,
+          "CurrCost": 77,
+          "Diff": 2,
+          "Ratio": 2.7,
+          "Tags": {},
+          "IsNearNew": false,
+          "_tags": {
+            "business": "未打标"
+          }
+        },
+        {
+          "ResourceId": "2039282986910117248",
+          "ProductName": "腾讯云智能体开发平台_DeepSeek-V3_token后付费",
+          "ProductCode": "sp_tcllmke_ds_v3_token_postpaid",
+          "PrevCost": 0,
+          "CurrCost": 2,
+          "Diff": 2,
+          "Ratio": 0,
+          "Tags": {},
+          "IsNearNew": true,
+          "_tags": {
+            "business": "未打标"
+          }
+        }
+      ],
+      "count": 12
+    },
+    "decline": {
+      "items": [
+        {
+          "ResourceId": "ccn-1f6h216t_vpc-aq5683np",
+          "ProductName": "云联网网络连接实例费",
+          "ProductCode": "sp_ccn_connecting_instance",
+          "PrevCost": 17,
+          "CurrCost": 12,
+          "Diff": -5,
+          "Ratio": -29.4,
+          "Tags": {
+            "business": "TSP"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "TSP"
+          }
+        },
+        {
+          "ResourceId": "100031104408(UIN)",
+          "ProductName": "月度计费精度差异",
+          "ProductCode": "billVirtualId",
+          "PrevCost": 4,
+          "CurrCost": 2,
+          "Diff": -2,
+          "Ratio": -50.0,
+          "Tags": {},
+          "IsNearNew": false,
+          "_tags": {
+            "business": "未打标"
+          }
+        },
+        {
+          "ResourceId": "ccn-1f6h216t_vpc-3m631y8f",
+          "ProductName": "云联网网络连接实例费",
+          "ProductCode": "sp_ccn_connecting_instance",
+          "PrevCost": 14,
+          "CurrCost": 12,
+          "Diff": -2,
+          "Ratio": -14.3,
+          "Tags": {
+            "business": "TSP"
+          },
+          "IsNearNew": false,
+          "_tags": {
+            "business": "TSP"
+          }
+        }
+      ],
+      "count": 3
+    },
+    "new": {
+      "items": [
+        {
+          "ResourceId": "acc-eaxz1lup",
+          "ProductName": "腾讯云代码助手-旗舰版",
+          "ProductCode": "sp_tcaca_ai_code_premium_edition",
+          "RealTotalCost": 192,
+          "Tags": {},
+          "_tags": {
+            "business": "未打标"
+          }
+        },
+        {
+          "ResourceId": "ins-8gvszw78",
+          "ProductName": "云服务器CVM-标准型SA9",
+          "ProductCode": "sp_cvm_sa9",
+          "RealTotalCost": 1,
+          "Tags": {
+            "business": "Devops"
+          },
+          "_tags": {
+            "business": "Devops"
+          }
+        },
+        {
+          "ResourceId": "disk-7j43m7ly",
+          "ProductName": "通用型SSD云硬盘",
+          "ProductCode": "sp_cbs_bssd",
+          "RealTotalCost": 1,
+          "Tags": {
+            "business": "Devops"
+          },
+          "_tags": {
+            "business": "Devops"
+          }
+        },
+        {
+          "ResourceId": "1777593046547562496",
+          "ProductName": "腾讯云智能体开发平台_精调知识大模型高级版_token后付费",
+          "ProductCode": "sp_tcllmke_snad_byktoken",
+          "RealTotalCost": 0,
+          "Tags": {},
+          "_tags": {
+            "business": "未打标"
+          }
+        },
+        {
+          "ResourceId": "ins-pwein092",
+          "ProductName": "云服务器CVM-智能型Ai2",
+          "ProductCode": "sp_cvm_ai2",
+          "RealTotalCost": -38,
+          "Tags": {
+            "business": "Devops"
+          },
+          "_tags": {
+            "business": "Devops"
+          }
+        },
+        {
+          "ResourceId": "ins-p0jyq4lm",
+          "ProductName": "云服务器CVM-智能型Ai2",
+          "ProductCode": "sp_cvm_ai2",
+          "RealTotalCost": -38,
+          "Tags": {},
+          "_tags": {
+            "business": "未打标"
+          }
+        }
+      ],
+      "count": 6
+    },
+    "offline": {
+      "items": [],
+      "count": 0
+    }
+  },
+  "summary_tag": {
+    "business": [
+      {
+        "TagValue": "TSP",
+        "202605": 10372,
+        "202604": 10311
+      },
+      {
+        "TagValue": "",
+        "202605": 6542,
+        "202604": 6325
+      },
+      {
+        "TagValue": "Int and Pre public",
+        "202605": 1369,
+        "202604": 1369
+      },
+      {
+        "TagValue": "model",
+        "202605": 424,
+        "202604": 424
+      },
+      {
+        "TagValue": "Devops",
+        "202605": 360,
+        "202604": 350
+      },
+      {
+        "TagValue": "TCS",
+        "202605": 253,
+        "202604": 244
+      }
+    ]
+  },
+  "effective_tag_keys": [
+    "business"
+  ],
+  "product_code_to_name": {
+    "p_emr": "弹性MapReduce",
+    "p_wsm_waf": "T-Sec-Web应用防火墙（WAF）",
+    "p_cvm": "云服务器CVM",
+    "p_kms": "T-Sec-密钥管理系统(KMS)",
+    "p_oceanus": "流计算Oceanus",
+    "p_mongodb": "云数据库TencentDB for MongoDB",
+    "p_nat": "NAT网关",
+    "p_cdwch": "腾讯云数据仓库 TCHouse-C",
+    "p_es": "Elasticsearch Service",
+    "p_cloudfirewall": "T-Sec-云防火墙(CFW)",
+    "p_snapshot": "云硬盘快照Snapshot",
+    "p_ckafka": "消息服务CKafka",
+    "p_cdb": "云数据库MySQL",
+    "p_clb": "负载均衡",
+    "p_postgresql": "云数据库PostgreSQL",
+    "p_bi": "腾讯云BI",
+    "p_cbs": "云硬盘CBS",
+    "p_cos": "COS 对象存储",
+    "p_011691": "容器服务 TKE",
+    "p_ccn": "云联网CCN",
+    "p_dlc": "数据湖计算",
+    "p_tse_sre": "TSE 注册配置中心",
+    "p_cm": "云监控",
+    "p_tcaca": "腾讯云代码助手",
+    "p_tio": "腾讯云TI平台TI-ONE",
+    "p_redis": "腾讯云分布式缓存数据库",
+    "p_cls": "日志服务CLS",
+    "p_ssm": "T-Sec-凭据管理系统（SSM）",
+    "billVirtualId": "月度计费精度差异",
+    "p_tcllmke": "腾讯云智能体开发平台",
+    "p_eip": "公网 IP",
+    "p_cynosdb": "TDSQL-C MySQL版",
+    "p_ci": "数据万象CI",
+    "p_scf": "云函数SCF"
+  },
+  "_HARD_REMINDER": "⚠️ report_ready.available=True → ALL DATA IS READY. DO NOT exec/Read/cat any cache JSON file. DO NOT write scripts to re-fetch or re-compute. Step 3: pipeline = extract_step3_data.py → render_billing_html.py → preview. Violation = F-EXEC-FRAG + F-EXPLORE-LOOP (HARD). See SKILL.md §⚡执行效率 HARD 约束.",
+  "_TOTAL_EXEC_BUDGET": "Step 3 exec budget: ≤2 total (1 for extract_step3_data.py, 1 for render_billing_html.py). NO exec for reading raw cache."
+}

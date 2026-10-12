@@ -1,0 +1,13 @@
+{
+  "Ready": 1,
+  "SummaryTotal": {
+    "RealTotalCost": "0",
+    "TotalCost": "0",
+    "VoucherPayAmount": "0",
+    "IncentivePayAmount": "0",
+    "CashPayAmount": "0",
+    "TransferPayAmount": "0"
+  },
+  "SummaryOverview": [],
+  "RequestId": "42d96617-cc60-43f0-93b5-98847b6e1af4"
+}

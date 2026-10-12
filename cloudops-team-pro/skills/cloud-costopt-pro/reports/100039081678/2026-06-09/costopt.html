@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<title>UIN-100039081678 2026-05 闲置资源巡检看板</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #0b1020 0%, #131933 100%);
+  color: #f5f6fb;
+  min-height: 100vh;
+  padding: 40px 32px;
+  line-height: 1.6;
+}
+.container { max-width: 1280px; margin: 0 auto; }
+header { margin-bottom: 32px; }
+h1 { font-size: 32px; font-weight: 700; margin: 0 0 8px 0; letter-spacing: 0.5px; }
+.subtitle { color: rgba(245,246,251,0.65); font-size: 14px; }
+.subtitle span { color: rgba(245,246,251,0.45); margin-left: 12px; }
+
+.card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.card-title { font-size: 18px; font-weight: 600; margin: 0 0 18px 0; display: flex; align-items: center; gap: 8px; }
+.card-title .badge { font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 999px; background: rgba(122,162,255,0.18); color: #7aa2ff; }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.kpi {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 20px 22px;
+}
+.kpi-label { color: rgba(245,246,251,0.6); font-size: 13px; margin-bottom: 8px; }
+.kpi-value { font-size: 28px; font-weight: 700; font-family: "SF Mono", "JetBrains Mono", Consolas, Menlo, monospace; }
+.kpi-sub { color: rgba(245,246,251,0.55); font-size: 12px; margin-top: 6px; }
+.kpi-value.saving { color: #4ade80; }
+.kpi-value.risk { color: #ff6b6b; }
+.kpi-value.shield { color: #7aa2ff; }
+
+.charts-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 24px; }
+.chart-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px; }
+.chart-title { font-size: 14px; font-weight: 600; color: rgba(245,246,251,0.85); margin-bottom: 12px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+th { color: rgba(245,246,251,0.65); font-weight: 600; font-size: 12px; background: rgba(255,255,255,0.03); position: sticky; top: 0; z-index: 1; white-space: nowrap; }
+td.num { font-family: "SF Mono", "JetBrains Mono", Consolas, Menlo, monospace; text-align: right; }
+.scroll-table { max-height: 460px; overflow-y: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); }
+
+.sev { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.sev-critical { background: rgba(255,107,107,0.18); color: #ff6b6b; }
+.sev-high { background: rgba(251,191,36,0.18); color: #fbbf24; }
+.sev-medium_high { background: rgba(251,146,36,0.18); color: #fb9224; }
+.sev-medium { background: rgba(250,204,21,0.16); color: #facc15; }
+.sev-low { background: rgba(74,222,128,0.16); color: #4ade80; }
+
+.saving-cell { color: #4ade80; font-weight: 600; }
+.tag-cell { display: inline-block; padding: 1px 8px; margin-right: 4px; background: rgba(122,162,255,0.15); color: #7aa2ff; font-size: 12px; border-radius: 6px; }
+.tag-cell.warn { background: rgba(251,191,36,0.18); color: #fbbf24; }
+.muted { color: rgba(245,246,251,0.45); }
+
+.insight-card { background: rgba(255,255,255,0.03); border-left: 3px solid #7aa2ff; padding: 10px 14px; margin-bottom: 10px; border-radius: 6px; }
+.insight-card.warn { border-left-color: #fbbf24; }
+.insight-card.danger { border-left-color: #ff6b6b; }
+.insight-card .level { display: inline-block; font-size: 12px; padding: 0 8px; border-radius: 4px; margin-right: 8px; background: rgba(122,162,255,0.18); color: #7aa2ff; }
+.insight-card.warn .level { background: rgba(251,191,36,0.18); color: #fbbf24; }
+.insight-card.danger .level { background: rgba(255,107,107,0.18); color: #ff6b6b; }
+
+.section-heading { display: flex; align-items: center; gap: 10px; margin: 0 0 14px 0; font-size: 15px; font-weight: 600; }
+.section-heading .count { color: rgba(245,246,251,0.55); font-size: 13px; font-weight: 500; }
+
+/* 列筛选器 — 集成在表头 */
+.col-filter-wrap { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.col-filter-btn {
+  background: none; border: none; color: rgba(245,246,251,0.4); font-size: 10px; cursor: pointer;
+  padding: 2px 4px; border-radius: 4px; line-height: 1;
+}
+.col-filter-btn:hover { color: #7aa2ff; background: rgba(122,162,255,0.1); }
+.col-filter-btn.active { color: #7aa2ff; }
+.col-filter-dropdown {
+  position: absolute; top: calc(100% + 2px); left: 0; min-width: 180px; max-width: 260px;
+  background: #1a1f35; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+  padding: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 100;
+  display: none; max-height: 280px; overflow-y: auto; text-align: left;
+}
+.col-filter-dropdown.open { display: block; }
+.col-filter-dropdown label {
+  display: flex; align-items: center; gap: 8px; padding: 4px 6px;
+  font-size: 13px; color: rgba(245,246,251,0.8); cursor: pointer; border-radius: 6px;
+  white-space: nowrap;
+}
+.col-filter-dropdown label:hover { background: rgba(255,255,255,0.06); }
+.col-filter-dropdown input[type="checkbox"] { accent-color: #7aa2ff; }
+.col-filter-dropdown .filter-actions {
+  display: flex; gap: 8px; padding: 8px 6px 2px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 4px;
+}
+.col-filter-dropdown .filter-actions button {
+  flex: 1; background: rgba(122,162,255,0.15); border: none; border-radius: 6px;
+  padding: 4px 0; color: #7aa2ff; font-size: 12px; cursor: pointer;
+}
+.col-filter-dropdown .filter-actions button:last-child { background: rgba(255,255,255,0.06); color: rgba(245,246,251,0.6); }
+.col-filter-input {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px; padding: 3px 8px; color: rgba(245,246,251,0.85);
+  font-size: 11px; width: 100%; outline: none; margin-top: 4px;
+}
+.col-filter-input::placeholder { color: rgba(245,246,251,0.4); }
+.filter-result-count { color: rgba(245,246,251,0.55); font-size: 12px; margin-left: auto; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head><body>
+<div class="container">
+<header>
+<h1>UIN-100039081678 · 闲置资源巡检看板</h1>
+<div class="subtitle">账单月份 2026-05 <span>监控窗口 2026-05-01 ~ 2026-05-31（30 天）</span></div>
+</header>
+<div class="card">
+<h2 class="card-title">关键指标 <span class="badge">KPI</span></h2>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">月度账单总额</div>
+        <div class="kpi-value">¥264,768</div>
+        <div class="kpi-sub">账单月 2026-05</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">预计月度节省</div>
+        <div class="kpi-value saving">¥8,359</div>
+        <div class="kpi-sub">占总账单 3.2%</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">发现优化资源</div>
+        <div class="kpi-value risk">46</div>
+        <div class="kpi-sub">含 9 严重 / 0 高优 / 32 中等 / 5 低风险</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">扫描覆盖资源</div>
+        <div class="kpi-value shield">47</div>
+        <div class="kpi-sub">46 优化 / 1 保护 / 0 豁免</div>
+      </div>
+    </div>
+    
+</div>
+<div class="card">
+<h2 class="card-title">风险结构</h2>
+<div class="charts-grid">
+
+    <div class="chart-box">
+      <div class="chart-title">风险等级分布</div>
+      <div style="position: relative; height: 280px;"><canvas id="sevChart"></canvas></div>
+    </div>
+    
+
+    <div class="chart-box">
+      <div class="chart-title">Top 产品预计月省</div>
+      <div style="position: relative; height: 280px;"><canvas id="productChart"></canvas></div>
+    </div>
+    
+</div></div>
+<div class="card">
+<h2 class="card-title">优化机会全量清单 <span class="badge">46 条</span></h2>
+
+    <div class="scroll-table">
+      <table id="findings-table">
+        <thead>
+          <tr>
+            <th style="position:relative;">
+    <div class="col-filter-wrap">
+      <span>等级</span>
+      <button class="col-filter-btn" onclick="toggleColFilter('sev', this)" id="sev-btn">▼</button>
+    </div>
+    <div class="col-filter-dropdown" id="sev-dropdown">
+      <label><input type="checkbox" class="filter-sev" value="critical">critical</label><label><input type="checkbox" class="filter-sev" value="medium">medium</label><label><input type="checkbox" class="filter-sev" value="low">low</label>
+      <div class="filter-actions"><button onclick="selectAll('sev')">全选</button><button onclick="clearFilter('sev')">重置</button></div>
+      
+    </div>
+    </th>
+            <th style="position:relative;">
+    <div class="col-filter-wrap">
+      <span>产品</span>
+      <button class="col-filter-btn" onclick="toggleColFilter('prod', this)" id="prod-btn">▼</button>
+    </div>
+    <div class="col-filter-dropdown" id="prod-dropdown">
+      <label><input type="checkbox" class="filter-prod" value="CBS 云硬盘">CBS 云硬盘</label><label><input type="checkbox" class="filter-prod" value="CLB 负载均衡">CLB 负载均衡</label><label><input type="checkbox" class="filter-prod" value="CVM 云服务器">CVM 云服务器</label><label><input type="checkbox" class="filter-prod" value="ES Elasticsearch">ES Elasticsearch</label><label><input type="checkbox" class="filter-prod" value="MongoDB">MongoDB</label><label><input type="checkbox" class="filter-prod" value="MySQL">MySQL</label><label><input type="checkbox" class="filter-prod" value="Redis">Redis</label><label><input type="checkbox" class="filter-prod" value="TKE 容器服务">TKE 容器服务</label>
+      <div class="filter-actions"><button onclick="selectAll('prod')">全选</button><button onclick="clearFilter('prod')">重置</button></div>
+      
+    </div>
+    </th>
+            <th>资源</th>
+            <th>地域</th>
+            <th>规格</th>
+            <th style="position:relative;">
+    <div class="col-filter-wrap">
+      <span>优化路径</span>
+      <button class="col-filter-btn" onclick="toggleColFilter('path', this)" id="path-btn">▼</button>
+    </div>
+    <div class="col-filter-dropdown" id="path-dropdown">
+      <label><input type="checkbox" class="filter-path" value="Elasticsearch 集群利用率不足">Elasticsearch 集群利用率不足</label><label><input type="checkbox" class="filter-path" value="云数据库（MongoDB）利用率不足">云数据库（MongoDB）利用率不足</label><label><input type="checkbox" class="filter-path" value="云数据库（Redis）利用率不足">云数据库（Redis）利用率不足</label><label><input type="checkbox" class="filter-path" value="定时关机">定时关机</label><label><input type="checkbox" class="filter-path" value="计费优化">计费优化</label><label><input type="checkbox" class="filter-path" value="释放">释放</label><label><input type="checkbox" class="filter-path" value="降配">降配</label>
+      <div class="filter-actions"><button onclick="selectAll('path')">全选</button><button onclick="clearFilter('path')">重置</button></div>
+      
+    </div>
+    </th>
+            <th>建议</th>
+            <th>建议规格</th>
+            <th>baseline</th>
+            <th>预计月省</th>
+            <th style="position:relative;">
+    <div class="col-filter-wrap">
+      <span>负责人</span>
+      <button class="col-filter-btn" onclick="toggleColFilter('owner', this)" id="owner-btn">▼</button>
+    </div>
+    <div class="col-filter-dropdown" id="owner-dropdown">
+      <label><input type="checkbox" class="filter-owner" value="andyyfang">andyyfang</label><label><input type="checkbox" class="filter-owner" value="bazhshi">bazhshi</label><label><input type="checkbox" class="filter-owner" value="handypang">handypang</label><label><input type="checkbox" class="filter-owner" value="minhma">minhma</label><label><input type="checkbox" class="filter-owner" value="sevenzhu">sevenzhu</label><label><input type="checkbox" class="filter-owner" value="walleezhang">walleezhang</label><label><input type="checkbox" class="filter-owner" value="yujundeng">yujundeng</label>
+      <div class="filter-actions"><button onclick="selectAll('owner')">全选</button><button onclick="clearFilter('owner')">重置</button></div>
+      
+    </div>
+    </th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="handypang" data-optimize-path="释放">
+          <td><span class="sev sev-critical">🔴 严重浪费</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-o0r673cn<div class="muted" style="font-size:12px;">sgm-全道VPN-caas-测试验证机</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>创建快照备份后释放实例（仅磁盘继续计费，如不再使用请释放）</td>
+          <td>释放实例(创建快照备份)</td>
+          <td class="num">¥408</td>
+          <td class="num saving-cell">¥363</td>
+          <td>handypang</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="handypang" data-optimize-path="释放">
+          <td><span class="sev sev-critical">🔴 严重浪费</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-gkfwg9i7<div class="muted" style="font-size:12px;">SGM-ipsec-vpn-连通性排障</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>2核2GB</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>创建快照备份后释放实例（仅磁盘继续计费，如不再使用请释放）</td>
+          <td>释放实例(创建快照备份)</td>
+          <td class="num">¥408</td>
+          <td class="num saving-cell">¥363</td>
+          <td>handypang</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="minhma" data-optimize-path="计费优化">
+          <td><span class="sev sev-critical">🔴 严重浪费</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-jqu6dal7<div class="muted" style="font-size:12px;">cls-0gt294iz_np-em08ebov-cb7sx</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>32核96GB</td>
+          <td><span class="tag-cell">计费优化</span></td>
+          <td>转包年包月（正常使用中）</td>
+          <td>转包年包月</td>
+          <td class="num">¥817</td>
+          <td class="num saving-cell">¥326</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="andyyfang" data-optimize-path="释放">
+          <td><span class="sev sev-critical">🔴 严重浪费</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-53cklyn3<div class="muted" style="font-size:12px;">public-ubuntu-01</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>创建快照备份后释放实例（仅磁盘继续计费，如不再使用请释放）</td>
+          <td>释放实例(创建快照备份)</td>
+          <td class="num">¥408</td>
+          <td class="num saving-cell">¥318</td>
+          <td>andyyfang</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="andyyfang" data-optimize-path="释放">
+          <td><span class="sev sev-critical">🔴 严重浪费</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-8gvy68t5<div class="muted" style="font-size:12px;">pac-cvd-proxy</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>创建快照备份后释放实例（仅磁盘继续计费，如不再使用请释放）</td>
+          <td>释放实例(创建快照备份)</td>
+          <td class="num">¥408</td>
+          <td class="num saving-cell">¥318</td>
+          <td>andyyfang</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="minhma" data-optimize-path="计费优化">
+          <td><span class="sev sev-critical">🔴 严重浪费</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-as2u07or<div class="muted" style="font-size:12px;">as-tke-np-f9jlxcnr</div></td>
+          <td>ap-shanghai</td>
+          <td>16核32GB</td>
+          <td><span class="tag-cell">计费优化</span></td>
+          <td>转包年包月（正常使用中）</td>
+          <td>转包年包月</td>
+          <td class="num">¥419</td>
+          <td class="num saving-cell">¥167</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CLB 负载均衡"
+            data-owner="minhma" data-optimize-path="释放">
+          <td><span class="sev sev-critical">🔴 严重浪费</span></td>
+          <td>CLB 负载均衡</td>
+          <td>lb-7whc8zrb<div class="muted" style="font-size:12px;">jac-cert-test</div></td>
+          <td>ap-shanghai</td>
+          <td>类型INTERNAL</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>确认后释放（未配置任何监听器，纯浪费）</td>
+          <td>释放实例</td>
+          <td class="num">¥40</td>
+          <td class="num saving-cell">¥40</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CBS 云硬盘"
+            data-owner="minhma" data-optimize-path="释放">
+          <td><span class="sev sev-critical">🔴 严重浪费</span></td>
+          <td>CBS 云硬盘</td>
+          <td>disk-hurbsokd<div class="muted" style="font-size:12px;">cls-ibr7vwxx/pvc-b37f8423-b68f-4956-9dfc-e8adcddedafe</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>100GB CLOUD_PREMIUM</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>快照备份后删除</td>
+          <td>释放磁盘</td>
+          <td class="num">¥102</td>
+          <td class="num saving-cell">¥35</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="critical" data-product="CVM 云服务器"
+            data-owner="-" data-optimize-path="计费优化">
+          <td><span class="sev sev-critical">🔴 严重浪费</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-npntxqpt<div class="muted" style="font-size:12px;">sgm-windows-远程测试SDK专用</div></td>
+          <td>ap-shanghai</td>
+          <td>8核16GB</td>
+          <td><span class="tag-cell">计费优化</span></td>
+          <td>转包年包月（正常使用中）</td>
+          <td>转包年包月</td>
+          <td class="num">¥79</td>
+          <td class="num saving-cell">¥31</td>
+          <td>-</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="bazhshi" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MySQL</td>
+          <td>cdb-ay16pssy<div class="muted" style="font-size:12px;">ad-simulation-mysql</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>16核32GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>16核32GB → 8核32GB</td>
+          <td>降至 8核32GB</td>
+          <td class="num">¥1,458</td>
+          <td class="num saving-cell">¥1,458</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="yujundeng" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-az45si7v<div class="muted" style="font-size:12px;">dms-gpu-01</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>96核384GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>96核384GB → 48核192GB</td>
+          <td>降至 48核192GB</td>
+          <td class="num">¥1,262</td>
+          <td class="num saving-cell">¥630</td>
+          <td>yujundeng</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="bazhshi" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-k6vuncrf<div class="muted" style="font-size:12px;">ad-simulation-base-tke-cvm0</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>32核64GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>32核64GB → 16核32GB</td>
+          <td>降至 16核32GB</td>
+          <td class="num">¥977</td>
+          <td class="num saving-cell">¥488</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="Redis"
+            data-owner="minhma" data-optimize-path="云数据库（Redis）利用率不足">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>Redis</td>
+          <td>crs-nxq08fgw<div class="muted" style="font-size:12px;">compliance-sdk-redis</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>16.0GB</td>
+          <td><span class="tag-cell">云数据库（Redis）利用率不足</span></td>
+          <td>16.0GB → 8.0GB</td>
+          <td>降至8.0GB</td>
+          <td class="num">¥863</td>
+          <td class="num saving-cell">¥345</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="andyyfang" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-r49iveaj<div class="muted" style="font-size:12px;">external-experience-windows-01</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>32核64GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>32核64GB → 16核32GB</td>
+          <td>降至 16核32GB</td>
+          <td class="num">¥408</td>
+          <td class="num saving-cell">¥204</td>
+          <td>andyyfang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="andyyfang" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-runlzcdx<div class="muted" style="font-size:12px;">public-openvpn-cvm</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>2核4GB → 1核2GB</td>
+          <td>降至 1核2GB</td>
+          <td class="num">¥408</td>
+          <td class="num saving-cell">¥204</td>
+          <td>andyyfang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="bazhshi" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-pnymbydx<div class="muted" style="font-size:12px;">ad-simulation-scene-tke-cvm0</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>32核64GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>32核64GB → 16核32GB</td>
+          <td>降至 16核32GB</td>
+          <td class="num">¥408</td>
+          <td class="num saving-cell">¥204</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="minhma" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-olrfya2d<div class="muted" style="font-size:12px;">public-caas-cvm-01</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>8核16GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>8核16GB → 4核8GB</td>
+          <td>降至 4核8GB</td>
+          <td class="num">¥408</td>
+          <td class="num saving-cell">¥204</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="minhma" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MySQL</td>
+          <td>cdb-6ngx2m8q<div class="muted" style="font-size:12px;">decryption-Mysql</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>4核8GB → 2核8GB</td>
+          <td>降至 2核8GB</td>
+          <td class="num">¥193</td>
+          <td class="num saving-cell">¥193</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="yujundeng" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MySQL</td>
+          <td>cdb-fufr5d2w<div class="muted" style="font-size:12px;">dms-mysql</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>4核8GB → 2核8GB</td>
+          <td>降至 2核8GB</td>
+          <td class="num">¥193</td>
+          <td class="num saving-cell">¥193</td>
+          <td>yujundeng</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="minhma" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MySQL</td>
+          <td>cdb-7g0g1hhi<div class="muted" style="font-size:12px;">compliance-sdk-mysql</div></td>
+          <td>ap-shanghai</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>4核8GB → 2核8GB</td>
+          <td>降至 2核8GB</td>
+          <td class="num">¥129</td>
+          <td class="num saving-cell">¥128</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="walleezhang" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-6hkfjvbl<div class="muted" style="font-size:12px;">toyota-caas-cvm-02</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>8核16GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>8核16GB → 4核8GB</td>
+          <td>降至 4核8GB</td>
+          <td class="num">¥244</td>
+          <td class="num saving-cell">¥122</td>
+          <td>walleezhang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="walleezhang" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-6df0gr0f<div class="muted" style="font-size:12px;">toyota-caas-cvm-01</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>8核16GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>8核16GB → 4核8GB</td>
+          <td>降至 4核8GB</td>
+          <td class="num">¥244</td>
+          <td class="num saving-cell">¥122</td>
+          <td>walleezhang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="minhma" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-fdszbdn7<div class="muted" style="font-size:12px;">argo-cvm-02</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>8核16GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>8核16GB → 4核8GB</td>
+          <td>降至 4核8GB</td>
+          <td class="num">¥244</td>
+          <td class="num saving-cell">¥122</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="minhma" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-anag9rn7<div class="muted" style="font-size:12px;">argo-cvm-01</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>8核16GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>8核16GB → 4核8GB</td>
+          <td>降至 4核8GB</td>
+          <td class="num">¥244</td>
+          <td class="num saving-cell">¥122</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="walleezhang" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MySQL</td>
+          <td>cdb-am8qnaig<div class="muted" style="font-size:12px;">toyota-caas-mysql</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>2核4GB → 1核2GB</td>
+          <td>降至 1核2GB</td>
+          <td class="num">¥97</td>
+          <td class="num saving-cell">¥96</td>
+          <td>walleezhang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="bazhshi" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MySQL</td>
+          <td>cdb-77tzbxni<div class="muted" style="font-size:12px;">dongfeng-caas-mysql</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>2核4GB → 1核2GB</td>
+          <td>降至 1核2GB</td>
+          <td class="num">¥97</td>
+          <td class="num saving-cell">¥96</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="handypang" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MySQL</td>
+          <td>cdb-gj35yrum<div class="muted" style="font-size:12px;">patac-caas-mysql</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>2核4GB → 1核2GB</td>
+          <td>降至 1核2GB</td>
+          <td class="num">¥97</td>
+          <td class="num saving-cell">¥96</td>
+          <td>handypang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="ES Elasticsearch"
+            data-owner="yujundeng" data-optimize-path="Elasticsearch 集群利用率不足">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>ES Elasticsearch</td>
+          <td>es-76isi28h<div class="muted" style="font-size:12px;">dms-elasticsearch</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>es-76isi28h.tencentelasticsearch.com</td>
+          <td><span class="tag-cell">Elasticsearch 集群利用率不足</span></td>
+          <td>Elasticsearch 集群利用率不足</td>
+          <td>降配</td>
+          <td class="num">¥264</td>
+          <td class="num saving-cell">¥92</td>
+          <td>yujundeng</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MongoDB"
+            data-owner="yujundeng" data-optimize-path="云数据库（MongoDB）利用率不足">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MongoDB</td>
+          <td>cmgo-n6hlsu87<div class="muted" style="font-size:12px;">dms-mongo</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>1</td>
+          <td><span class="tag-cell">云数据库（MongoDB）利用率不足</span></td>
+          <td>2核4GB → 1核2GB</td>
+          <td>降至 1核2GB</td>
+          <td class="num">¥304</td>
+          <td class="num saving-cell">¥91</td>
+          <td>yujundeng</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="sevenzhu" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-2fbs5gux<div class="muted" style="font-size:12px;">NISSAN-jumpserver-windows</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>4核8GB → 2核4GB</td>
+          <td>降至 2核4GB</td>
+          <td class="num">¥165</td>
+          <td class="num saving-cell">¥82</td>
+          <td>sevenzhu</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="Redis"
+            data-owner="bazhshi" data-optimize-path="云数据库（Redis）利用率不足">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>Redis</td>
+          <td>crs-d20tnifo<div class="muted" style="font-size:12px;">ad-simulation-redis</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4.0GB</td>
+          <td><span class="tag-cell">云数据库（Redis）利用率不足</span></td>
+          <td>4.0GB → 2.0GB</td>
+          <td>降至2.0GB</td>
+          <td class="num">¥197</td>
+          <td class="num saving-cell">¥78</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="Redis"
+            data-owner="yujundeng" data-optimize-path="云数据库（Redis）利用率不足">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>Redis</td>
+          <td>crs-ncwzoig2<div class="muted" style="font-size:12px;">dms-redis</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4.0GB</td>
+          <td><span class="tag-cell">云数据库（Redis）利用率不足</span></td>
+          <td>4.0GB → 2.0GB</td>
+          <td>降至2.0GB</td>
+          <td class="num">¥197</td>
+          <td class="num saving-cell">¥78</td>
+          <td>yujundeng</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="bazhshi" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-a42cz9tr<div class="muted" style="font-size:12px;">dixin-dongfeng-prod-proxy</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>4核8GB → 2核4GB</td>
+          <td>降至 2核4GB</td>
+          <td class="num">¥122</td>
+          <td class="num saving-cell">¥61</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="andyyfang" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-7h5q1wi9<div class="muted" style="font-size:12px;">dixin-proxy</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>4核8GB → 2核4GB</td>
+          <td>降至 2核4GB</td>
+          <td class="num">¥122</td>
+          <td class="num saving-cell">¥61</td>
+          <td>andyyfang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="bazhshi" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-cieimqcx<div class="muted" style="font-size:12px;">ad-simulation-scene-tke-cvm1</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>4核8GB → 2核4GB</td>
+          <td>降至 2核4GB</td>
+          <td class="num">¥122</td>
+          <td class="num saving-cell">¥61</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="bazhshi" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-fcyl3i0j<div class="muted" style="font-size:12px;">ad-simulation-base-tke-cvm1</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>4核8GB → 2核4GB</td>
+          <td>降至 2核4GB</td>
+          <td class="num">¥122</td>
+          <td class="num saving-cell">¥61</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CLB 负载均衡"
+            data-owner="walleezhang" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CLB 负载均衡</td>
+          <td>lb-ea3t10sf<div class="muted" style="font-size:12px;">ccs_cls-4em7ydfn_caas-ingress</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>类型INTERNAL</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>负载均衡（CLB）低利用率</td>
+          <td>降配</td>
+          <td class="num">¥60</td>
+          <td class="num saving-cell">¥60</td>
+          <td>walleezhang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="minhma" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MySQL</td>
+          <td>cdb-ek0g3o46<div class="muted" style="font-size:12px;">data_loop_srv-mysql</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>1核2GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>1核2GB → 1核1GB</td>
+          <td>降至 1核1GB</td>
+          <td class="num">¥48</td>
+          <td class="num saving-cell">¥48</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="MySQL"
+            data-owner="minhma" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>MySQL</td>
+          <td>cdb-4pkmlxv0<div class="muted" style="font-size:12px;">decrypt-test-mysql</div></td>
+          <td>ap-shanghai</td>
+          <td>1核1GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>1核1GB（已达最小规格，建议评估是否释放）</td>
+          <td>已达最小规格</td>
+          <td class="num">¥45</td>
+          <td class="num saving-cell">¥44</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="CVM 云服务器"
+            data-owner="handypang" data-optimize-path="降配">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-2oinxo0r<div class="muted" style="font-size:12px;">patac-jumpserver-linux</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>2核2GB</td>
+          <td><span class="tag-cell">降配</span></td>
+          <td>2核2GB → 1核1GB</td>
+          <td>降至 1核1GB</td>
+          <td class="num">¥46</td>
+          <td class="num saving-cell">¥22</td>
+          <td>handypang</td>
+        </tr>
+        
+        <tr data-severity="medium" data-product="Redis"
+            data-owner="minhma" data-optimize-path="云数据库（Redis）利用率不足">
+          <td><span class="sev sev-medium">🟡 中等优化</span></td>
+          <td>Redis</td>
+          <td>crs-irpm9cbm<div class="muted" style="font-size:12px;">data_loop_srv-redis</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>1.0GB</td>
+          <td><span class="tag-cell">云数据库（Redis）利用率不足</span></td>
+          <td>1.0GB → 512GB</td>
+          <td>降至512GB</td>
+          <td class="num">¥49</td>
+          <td class="num saving-cell">¥19</td>
+          <td>minhma</td>
+        </tr>
+        
+        <tr data-severity="low" data-product="CVM 云服务器"
+            data-owner="andyyfang" data-optimize-path="定时关机">
+          <td><span class="sev sev-low">🟢 低风险优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-q3hd9zrt<div class="muted" style="font-size:12px;">devops-ansible</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>2核4GB</td>
+          <td><span class="tag-cell">定时关机</span></td>
+          <td>建议配置定时关机（夜间/周末停机，预计省65%）</td>
+          <td>配置定时关机策略</td>
+          <td class="num">¥408</td>
+          <td class="num saving-cell">¥265</td>
+          <td>andyyfang</td>
+        </tr>
+        
+        <tr data-severity="low" data-product="CVM 云服务器"
+            data-owner="andyyfang" data-optimize-path="定时关机">
+          <td><span class="sev sev-low">🟢 低风险优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-da2eezcx<div class="muted" style="font-size:12px;">devops-internet-proxy-01</div></td>
+          <td>ap-shanghai</td>
+          <td>8核16GB</td>
+          <td><span class="tag-cell">定时关机</span></td>
+          <td>建议配置定时关机（夜间/周末停机，预计省65%）</td>
+          <td>配置定时关机策略</td>
+          <td class="num">¥163</td>
+          <td class="num saving-cell">¥105</td>
+          <td>andyyfang</td>
+        </tr>
+        
+        <tr data-severity="low" data-product="CVM 云服务器"
+            data-owner="bazhshi" data-optimize-path="定时关机">
+          <td><span class="sev sev-low">🟢 低风险优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-jvjcnmbb<div class="muted" style="font-size:12px;">ad-simulation-test-cvm</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>4核8GB</td>
+          <td><span class="tag-cell">定时关机</span></td>
+          <td>建议配置定时关机（夜间/周末停机，预计省65%）</td>
+          <td>配置定时关机策略</td>
+          <td class="num">¥122</td>
+          <td class="num saving-cell">¥79</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="low" data-product="CVM 云服务器"
+            data-owner="bazhshi" data-optimize-path="定时关机">
+          <td><span class="sev sev-low">🟢 低风险优化</span></td>
+          <td>CVM 云服务器</td>
+          <td>ins-o1r8tyyh<div class="muted" style="font-size:12px;">dms-cpu-test</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>32核64GB</td>
+          <td><span class="tag-cell">定时关机</span></td>
+          <td>建议配置定时关机（夜间/周末停机，预计省65%）</td>
+          <td>配置定时关机策略</td>
+          <td class="num">¥99</td>
+          <td class="num saving-cell">¥64</td>
+          <td>bazhshi</td>
+        </tr>
+        
+        <tr data-severity="low" data-product="TKE 容器服务"
+            data-owner="-" data-optimize-path="释放">
+          <td><span class="sev sev-low">🟢 低风险优化</span></td>
+          <td>TKE 容器服务</td>
+          <td>cls-jalv957t<div class="muted" style="font-size:12px;">compliance-sdk-vpc</div></td>
+          <td>ap-shanghai-adc</td>
+          <td>-</td>
+          <td><span class="tag-cell">释放</span></td>
+          <td>确认后销毁集群</td>
+          <td>销毁集群</td>
+          <td class="num">¥0</td>
+          <td class="num saving-cell">¥0</td>
+          <td>-</td>
+        </tr>
+        
+        </tbody>
+      </table>
+    </div>
+    <div style="text-align:right; margin-top:8px;">
+      <span class="filter-result-count" id="filter-count"></span>
+    </div>
+    
+</div>
+<div class="card">
+<h2 class="card-title">按产品聚合</h2>
+
+    <div class="scroll-table">
+      <table>
+        <thead><tr><th>产品</th><th>问题资源数</th><th>预计月省</th><th>占比</th></tr></thead>
+        <tbody>
+        <tr>
+          <td>CVM 云服务器</td>
+          <td class="num">27</td>
+          <td class="num saving-cell">¥5,169</td>
+          <td class="num">61.8%</td>
+        </tr>
+        
+        <tr>
+          <td>MySQL</td>
+          <td class="num">9</td>
+          <td class="num saving-cell">¥2,352</td>
+          <td class="num">28.1%</td>
+        </tr>
+        
+        <tr>
+          <td>Redis</td>
+          <td class="num">4</td>
+          <td class="num saving-cell">¥520</td>
+          <td class="num">6.2%</td>
+        </tr>
+        
+        <tr>
+          <td>CLB 负载均衡</td>
+          <td class="num">2</td>
+          <td class="num saving-cell">¥100</td>
+          <td class="num">1.2%</td>
+        </tr>
+        
+        <tr>
+          <td>ES Elasticsearch</td>
+          <td class="num">1</td>
+          <td class="num saving-cell">¥92</td>
+          <td class="num">1.1%</td>
+        </tr>
+        
+        <tr>
+          <td>MongoDB</td>
+          <td class="num">1</td>
+          <td class="num saving-cell">¥91</td>
+          <td class="num">1.1%</td>
+        </tr>
+        
+        <tr>
+          <td>CBS 云硬盘</td>
+          <td class="num">1</td>
+          <td class="num saving-cell">¥35</td>
+          <td class="num">0.4%</td>
+        </tr>
+        
+        <tr>
+          <td>TKE 容器服务</td>
+          <td class="num">1</td>
+          <td class="num saving-cell">¥0</td>
+          <td class="num">0.0%</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    
+</div>
+<div class="card">
+<h2 class="card-title">智能洞察</h2>
+<div class="insight-card danger"><span class="level">高危</span>🔴 发现 9 个严重浪费资源（停机按量/无后端CLB/按量长期运行等），预计月省 ¥1,961，建议立即处理</div><div class="insight-card "><span class="level">提示</span>📊 CVM 云服务器 优化空间最大（按量长期运行3个、非生产可定时关机4个、停机按量计费4个、云服务器（CVM）实例利用率不足16个），预计月省 ¥5,169</div><div class="insight-card "><span class="level">提示</span>💻 27 台 CVM 有优化空间（按量长期运行3台、非生产可定时关机4台、停机按量计费4台、云服务器（CVM）实例利用率不足16台），预计月省 ¥5,169</div><div class="insight-card "><span class="level">提示</span>💾 CBS 优化空间：1个未挂载，预计月省 ¥35</div><div class="insight-card warn"><span class="level">关注</span>🗄 数据库优化空间：，预计月省 ¥2,963</div><div class="insight-card "><span class="level">提示</span>📈 优化路径排名：云服务器（CVM）实例利用率不足(2770个·¥2,770)、云数据库（MySQL）利用率不足(2352个·¥2,352)、停机按量计费(1362个·¥1,362)、按量长期运行(524个·¥524)、云数据库（Redis）利用率不足(520个·¥520)</div><div class="insight-card "><span class="level">提示</span>⚡ 执行建议：严重+低风险项预计月省 ¥2,474（占比29%），可立即执行</div><div class="insight-card "><span class="level">提示</span>🛡 1 个关键资源已自动豁免闲置判定（主备/只读/副本），不做优化建议</div><div class="insight-card "><span class="level">提示</span>📋 1 类产品暂无资源级扫描 API（向量数据库 VectorDB），仅展示账单费用</div>
+</div>
+</div>
+<script>
+const COSTOPT_CHART_DATA = {"severity": {"labels": ["🔴 严重浪费", "🟠 高优化项", "🟠 建议处理", "🟡 中等优化", "🟢 低风险优化"], "counts": [9, 0, 0, 32, 5], "savings": [1961, 0, 0, 5885, 513], "colors": ["#ff6b6b", "#fbbf24", "#fb9224", "#facc15", "#4ade80"]}, "products": {"labels": ["CVM 云服务器", "MySQL", "Redis", "CLB 负载均衡", "ES Elasticsearch", "MongoDB", "CBS 云硬盘", "TKE 容器服务"], "savings": [5169, 2352, 520, 100, 92, 91, 35, 0]}};
+
+        (function(){
+          if (typeof Chart === 'undefined') return;
+          Chart.defaults.color = 'rgba(245,246,251,0.7)';
+          Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+          Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif';
+          const sev = COSTOPT_CHART_DATA.severity;
+          const prod = COSTOPT_CHART_DATA.products;
+          new Chart(document.getElementById('sevChart'), {
+            type: 'doughnut',
+            data: {
+              labels: sev.labels,
+              datasets: [{ data: sev.counts, backgroundColor: sev.colors, borderColor: 'rgba(0,0,0,0)', borderWidth: 0 }]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false, cutout: '60%',
+              plugins: { legend: { position: 'right' }, tooltip: { callbacks: {
+                label: function(ctx){
+                  const i = ctx.dataIndex;
+                  return ctx.label + ': ' + ctx.parsed + ' 条 · 预计省 ¥' + sev.savings[i].toLocaleString();
+                }
+              } } }
+            }
+          });
+          new Chart(document.getElementById('productChart'), {
+            type: 'bar',
+            data: {
+              labels: prod.labels,
+              datasets: [{
+                label: '预计月省 (¥)',
+                data: prod.savings,
+                backgroundColor: 'rgba(74,222,128,0.7)',
+                borderColor: 'rgba(74,222,128,0.9)',
+                borderWidth: 1, borderRadius: 4
+              }]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              scales: {
+                x: { grid: { display: false } },
+                y: { ticks: { callback: v => '¥' + Number(v).toLocaleString() } }
+              },
+              plugins: { legend: { display: false } }
+            }
+          });
+        })();
+
+        // ─── 表格筛选逻辑 ───
+        (function(){
+          function getCheckedValues(cls) {
+            return Array.from(document.querySelectorAll('.' + cls + ':checked')).map(cb => cb.value);
+          }
+          function setBtnActive(btnId, active) {
+            const btn = document.getElementById(btnId);
+            if (btn) btn.classList.toggle('active', active);
+          }
+          window.toggleColFilter = function(filterId, btn) {
+            const dd = document.getElementById(filterId + '-dropdown');
+            if (!dd) return;
+            const wasOpen = dd.classList.contains('open');
+            document.querySelectorAll('.col-filter-dropdown.open').forEach(d => d.classList.remove('open'));
+            document.querySelectorAll('.col-filter-btn.active').forEach(b => b.classList.remove('active'));
+            if (!wasOpen) {
+              dd.classList.add('open');
+              btn.classList.add('active');
+            }
+          };
+          window.selectAll = function(prefix) {
+            document.querySelectorAll('.filter-' + prefix).forEach(cb => cb.checked = true);
+            applyFilters();
+          };
+          window.clearFilter = function(prefix) {
+            document.querySelectorAll('.filter-' + prefix).forEach(cb => cb.checked = false);
+            applyFilters();
+          };
+          window.applyFilters = function() {
+            const sevChecked = getCheckedValues('filter-sev');
+            const prodChecked = getCheckedValues('filter-prod');
+            const ownerChecked = getCheckedValues('filter-owner');
+            const pathChecked = getCheckedValues('filter-path');
+
+            setBtnActive('sev-btn', sevChecked.length > 0);
+            setBtnActive('prod-btn', prodChecked.length > 0);
+            setBtnActive('owner-btn', ownerChecked.length > 0);
+            setBtnActive('path-btn', pathChecked.length > 0);
+
+            const rows = document.querySelectorAll('#findings-table tbody tr');
+            let visible = 0;
+            rows.forEach(row => {
+              const sev = row.dataset.severity || '';
+              const prod = row.dataset.product || '';
+              const owner = row.dataset.owner || '';
+              const path = row.dataset.optimizePath || '';
+
+              let show = true;
+              if (sevChecked.length > 0 && !sevChecked.includes(sev)) show = false;
+              if (prodChecked.length > 0 && !prodChecked.includes(prod)) show = false;
+              if (ownerChecked.length > 0 && !ownerChecked.includes(owner)) show = false;
+              if (pathChecked.length > 0 && !pathChecked.includes(path)) show = false;
+
+              row.style.display = show ? '' : 'none';
+              if (show) visible++;
+            });
+
+            const total = rows.length;
+            const cntEl = document.getElementById('filter-count');
+            if (cntEl) cntEl.textContent = '显示 ' + visible + ' / ' + total + ' 条';
+          };
+
+          // 监听 checkbox 变化
+          ['filter-sev', 'filter-prod', 'filter-owner', 'filter-path'].forEach(cls => {
+            document.querySelectorAll('.' + cls).forEach(cb => {
+              cb.addEventListener('change', applyFilters);
+            });
+          });
+
+          // 点击外部关闭下拉
+          document.addEventListener('click', function(e) {
+            if (!e.target.closest('.col-filter-wrap') && !e.target.closest('.col-filter-dropdown')) {
+              document.querySelectorAll('.col-filter-dropdown.open').forEach(d => d.classList.remove('open'));
+              document.querySelectorAll('.col-filter-btn.active').forEach(b => b.classList.remove('active'));
+            }
+          });
+
+          applyFilters();
+        })();
+        
+</script>
+</body></html>

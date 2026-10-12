@@ -1,0 +1,437 @@
+defaults:
+  patterns:
+  - name: low_utilization_downsize
+    description: Low utilization → downsize
+    condition: cpu_avg < 5 AND mem_avg < 30
+    action: downsize
+    severity: high
+  - name: idle_release
+    description: Idle → release
+    condition: cpu_avg < 2 AND (connections_avg < 5 OR connections IS NULL)
+    action: release
+    severity: high
+  - name: paygo_long_running
+    description: Pay-as-you-go running > 30 days → switch to reserved
+    condition: charge_type IN (POSTPAID, POSTPAID_BY_HOUR) AND age_days >= 30
+    action: switch_billing
+    severity: critical
+  - name: unattached_release
+    description: Unattached resource → release
+    condition: attached = false OR status = STOPPED
+    action: release
+    severity: critical
+  - name: no_traffic_release
+    description: No traffic/connections → confirm release
+    condition: connections_avg < 1 AND bytes_avg < 100
+    action: release
+    severity: high
+  metric_aliases:
+    cpu:
+    - CPUUseRate
+    - CpuUseRate
+    - CpuUsage
+    - MonogdAvgCpuUsage
+    - cpu_utilization
+    mem:
+    - MemoryUseRate
+    - MemUsage
+    - MemoryUsage
+    - mem_utilization
+    connections:
+    - ConnectionUseRate
+    - ClusterConn
+    - ConnUsageRate
+    - connections
+    qps:
+    - Qps
+    - QPS
+    - RequestsRate
+    - request_rate
+    bytes_in:
+    - InTraffic
+    - InBandwidth
+    - NetInRate
+    - bytes_in
+    bytes_out:
+    - OutTraffic
+    - OutBandwidth
+    - NetOutRate
+    - bytes_out
+    iops_read:
+    - ReadIOPS
+    - DiskReadIops
+    iops_write:
+    - WriteIOPS
+    - DiskWriteIops
+cvm:
+  display_name: CVM 云服务器
+  rid_field: InstanceId
+  name_field: InstanceName
+  spec_fields:
+  - CPU
+  - Memory
+  spec_fn: cvm_spec
+  charge_field: InstanceChargeType
+  charge_mapping:
+    POSTPAID_BY_HOUR: POSTPAID
+    PREPAID: PREPAID
+  metrics:
+    cpu: CPUUseRate
+    mem: MemUsage
+  rules:
+  - name: stopped_paygo
+    condition: state = STOPPED AND charge = POSTPAID
+    action: release
+    severity: critical
+    suggestion_stop_charging: 创建快照备份后释放实例（仅磁盘继续计费，如不再使用请释放）
+    suggestion_keep_charging: 切换为关机不计费模式，或创建快照备份后释放实例
+    target_spec: 释放实例(创建快照备份)
+    optimize_path: 释放
+  - name: idle
+    condition: cpu_avg < 2 AND mem_avg < 5
+    action: release
+    severity: high
+    suggestion: 疑似闲置，建议评审后释放
+    target_spec: 释放实例(创建快照备份)
+    optimize_path: 释放
+  - name: low_utilization
+    condition: cpu_avg < 10 AND mem_avg < 20
+    action: downsize
+    severity: high
+    suggestion: 低利用率，建议降配
+    optimize_path: 降配
+  - name: paygo_long_running
+    condition: charge = POSTPAID AND age_days >= 30
+    action: switch_billing
+    severity: critical
+    suggestion: 转包年包月（正常使用中）
+    target_spec: 转包年包月
+    optimize_path: 计费优化
+  - name: nonprod_schedulable
+    condition: cpu_avg < 15 AND env = nonprod
+    action: schedule_stop
+    severity: medium
+    suggestion: 非生产环境可定时关机
+    optimize_path: 定时关机
+  spec_tiers:
+  - - 1
+    - 1
+  - - 1
+    - 2
+  - - 2
+    - 2
+  - - 2
+    - 4
+  - - 4
+    - 4
+  - - 4
+    - 8
+  - - 8
+    - 8
+  - - 8
+    - 16
+  - - 16
+    - 32
+  - - 32
+    - 64
+mysql:
+  display_name: MySQL
+  rid_field: InstanceId
+  name_field: InstanceName
+  spec_fields:
+  - Cpu
+  - Memory
+  spec_fn: mysql_spec
+  charge_field: PayType
+  charge_mapping:
+    0: PREPAID
+    1: POSTPAID
+  metrics:
+    cpu: CPUUseRate
+    connections: ConnectionUseRate
+    mem: MemoryUseRate
+  rules:
+  - name: idle
+    condition: cpu_avg < 5 AND connections_avg < 5 AND mem_avg < 20
+    action: release
+    severity: high
+    suggestion: 关停或释放（请评审）
+    target_spec: 释放实例
+    optimize_path: 释放
+  - name: low_utilization_downsize
+    condition: cpu_avg < 5 AND connections_avg < 20 AND mem_avg < 30
+    action: downsize
+    severity: high
+    suggestion: 低利用率可降配
+    optimize_path: 降配
+  - name: paygo_long_running
+    condition: charge = POSTPAID AND age_days >= 30
+    action: switch_billing
+    severity: critical
+    suggestion: 转包年包月（节省约40%）
+    target_spec: 转包年包月
+    optimize_path: 计费优化
+  spec_tiers:
+  - - 1
+    - 1
+  - - 1
+    - 2
+  - - 2
+    - 4
+  - - 4
+    - 8
+  - - 4
+    - 16
+  - - 8
+    - 32
+  - - 16
+    - 64
+  - - 16
+    - 128
+  - - 32
+    - 128
+  - - 48
+    - 256
+  - - 64
+    - 512
+redis:
+  display_name: Redis
+  rid_field: InstanceId
+  name_field: InstanceName
+  spec_fields:
+  - Size
+  - Memory
+  spec_fn: redis_spec
+  charge_field: PayMode
+  charge_mapping:
+    0: PREPAID
+    1: POSTPAID
+  metrics:
+    mem: MemUsage
+    connections: Connections
+  rules:
+  - name: idle
+    condition: mem_max < 5 AND connections_avg < 5
+    action: release
+    severity: high
+    suggestion: 关停或释放（请评审）
+    target_spec: 释放实例
+    optimize_path: 释放
+  - name: low_mem_downsize
+    condition: mem_max < 50
+    action: downsize
+    severity: high
+    suggestion: 内存低可降配（峰值×2取档位）
+    optimize_path: 降配
+  memory_tiers_mb:
+  - 256
+  - 512
+  - 1024
+  - 2048
+  - 4096
+  - 8192
+  - 16384
+  - 32768
+  - 65536
+mongodb:
+  display_name: MongoDB
+  rid_field: InstanceId
+  name_field: InstanceName
+  spec_fields:
+  - CpuNum
+  - Memory
+  spec_fn: mongodb_spec
+  charge_field: PayMode
+  charge_mapping:
+    0: PREPAID
+    1: POSTPAID
+  metrics:
+    cpu: MonogdAvgCpuUsage
+    qps: Qps
+    connections: ClusterConn
+  rules:
+  - name: idle
+    condition: cpu_avg < 5 AND qps_avg < 1 AND (connections_avg < 10 OR connections
+      IS NULL)
+    action: release
+    severity: high
+    suggestion: 关停或释放（请评审）
+    target_spec: 释放实例
+    optimize_path: 释放
+  - name: low_utilization_downsize
+    condition: cpu_avg < 10 AND qps_avg < 10
+    action: downsize
+    severity: high
+    suggestion: 低利用率可降配
+    optimize_path: 降配
+  - name: paygo_long_running
+    condition: charge = POSTPAID AND age_days >= 30
+    action: switch_billing
+    severity: critical
+    suggestion: 转包年包月（节省约40%）
+    target_spec: 转包年包月
+    optimize_path: 计费优化
+  spec_tiers:
+  - - 1
+    - 2
+  - - 2
+    - 4
+  - - 4
+    - 8
+  - - 8
+    - 16
+  - - 16
+    - 32
+  - - 32
+    - 64
+  - - 64
+    - 128
+  - - 96
+    - 256
+clb:
+  display_name: CLB 负载均衡
+  rid_field: LoadBalancerId
+  name_field: LoadBalancerName
+  spec_fields: []
+  spec_fn: clb_spec
+  rules:
+  - name: no_listener
+    condition: listeners_count = 0
+    action: release
+    severity: critical
+    suggestion: 无监听器，建议释放
+    target_spec: 释放实例
+    optimize_path: 释放
+  - name: no_backend
+    condition: backends_count = 0
+    action: release
+    severity: critical
+    suggestion: 无后端绑定，建议释放
+    target_spec: 释放实例
+    optimize_path: 释放
+  - name: low_connections
+    condition: connections_avg < 1 AND backends_count > 0
+    action: confirm_stop
+    severity: high
+    suggestion: 有后端但无连接，确认是否停用
+    optimize_path: 确认停用
+cbs:
+  display_name: CBS 云硬盘
+  rid_field: DiskId
+  name_field: DiskName
+  spec_fields:
+  - DiskSize
+  - DiskType
+  spec_fn: cbs_spec
+  rules:
+  - name: unattached
+    condition: attached = false
+    action: release
+    severity: critical
+    suggestion: 快照备份后删除
+    target_spec: 释放磁盘
+    optimize_path: 释放
+  disk_type_prices:
+    CLOUD_BSSD: 0.9
+    CLOUD_SSD: 0.7
+    CLOUD_PREMIUM: 0.35
+    CLOUD_BASIC: 0.3
+ccn:
+  display_name: CCN 云联网
+  rid_field: InstanceId
+  name_field: InstanceName
+  spec_fields: []
+  spec_fn: generic_spec
+  rules:
+  - name: low_bandwidth
+    condition: bandwidth_avg < 1
+    action: confirm_stop
+    severity: medium
+    suggestion: 带宽利用率低，确认是否仍需保留
+    optimize_path: 缩减带宽
+cls:
+  display_name: 日志服务 CLS
+  rid_field: TopicId
+  name_field: TopicName
+  spec_fields: []
+  spec_fn: generic_spec
+  rules:
+  - name: low_usage
+    condition: write_avg < 100
+    action: confirm_stop
+    severity: low
+    suggestion: 写入量极低，确认是否仍需保留
+    optimize_path: 确认停用
+nat:
+  display_name: NAT 网关
+  rid_field: NatGatewayId
+  name_field: NatGatewayName
+  spec_fields:
+  - MaxConcurrent
+  - InternetMaxBandwidthOut
+  spec_fn: generic_spec
+  rules:
+  - name: low_connections
+    condition: connections_avg < 10
+    action: confirm_stop
+    severity: medium
+    suggestion: 连接数极低，确认是否仍需保留
+    optimize_path: 确认停用
+kms:
+  display_name: 密钥管理 KMS
+  rid_field: KeyId
+  name_field: Alias
+  spec_fields: []
+  spec_fn: generic_spec
+  rules: []
+pgsql:
+  display_name: PostgreSQL
+  rid_field: DBInstanceId
+  name_field: InstanceName
+  spec_fields:
+  - Cpu
+  - Memory
+  spec_fn: pgsql_spec
+  charge_field: PayType
+  charge_mapping:
+    0: PREPAID
+    1: POSTPAID
+  metrics:
+    cpu: CPUUseRate
+    connections: ConnectionUseRate
+    mem: MemoryUseRate
+  rules:
+  - name: idle
+    condition: cpu_avg < 5 AND connections_avg < 5
+    action: release
+    severity: high
+    suggestion: 关停或释放（请评审）
+    target_spec: 释放实例
+    optimize_path: 释放
+  - name: low_utilization_downsize
+    condition: cpu_avg < 10 AND connections_avg < 20
+    action: downsize
+    severity: high
+    suggestion: 低利用率可降配
+    optimize_path: 降配
+  spec_tiers:
+  - - 1
+    - 2
+  - - 2
+    - 4
+  - - 4
+    - 8
+  - - 4
+    - 16
+  - - 8
+    - 16
+  - - 8
+    - 32
+  - - 16
+    - 64
+evolution_log:
+- date: '2026-06-08'
+  product: CCN 云联网
+  finding: 'low_bandwidth: bandwidth_avg < 1'
+  confirmed_by: llm
+  promoted_to_rule: true

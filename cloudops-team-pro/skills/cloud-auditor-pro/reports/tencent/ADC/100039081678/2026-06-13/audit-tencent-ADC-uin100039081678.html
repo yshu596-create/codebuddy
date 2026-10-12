@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ADC CloudAudit High-Risk Event Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg-0: #0b1020; --bg-1: #111933; --line: rgba(120,144,200,0.16);
+  --text-0: #e7ecff; --text-1: #aab4dc; --text-2: #6f7aa8;
+  --accent: #5b8cff; --accent-2: #8b5cff;
+  --good: #36d399; --warn: #f5b455; --bad: #ef4f6f;
+  --shadow: 0 8px 32px rgba(0,0,0,0.32);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background:
+  radial-gradient(1200px 600px at 10% -10%, rgba(91,140,255,0.18), transparent 60%),
+  radial-gradient(900px 500px at 110% 10%, rgba(139,92,255,0.16), transparent 60%),
+  var(--bg-0); color: var(--text-0); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+  "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif; font-size: 14px; line-height: 1.55; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 24px 28px 80px; }
+.hero { background: linear-gradient(135deg, rgba(91,140,255,0.12), rgba(139,92,255,0.10));
+  border: 1px solid var(--line); border-radius: 16px; padding: 24px 28px; margin-bottom: 20px;
+  backdrop-filter: blur(8px); box-shadow: var(--shadow); }
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 16px; }
+.hero h1 { font-size: 22px; margin: 0 0 6px; }
+.hero .sub { color: var(--text-1); font-size: 13px; }
+.tag { display: inline-block; padding: 4px 10px; border-radius: 999px;
+  background: rgba(91,140,255,0.18); color: #b8caff; font-size: 12px;
+  border: 1px solid rgba(91,140,255,0.32); margin-left: 8px; }
+.tag.warn { background: rgba(245,180,85,0.16); color: #ffd49a; border-color: rgba(245,180,85,0.32); }
+.tag.ok { background: rgba(54,211,153,0.16); color: #9ee9c9; border-color: rgba(54,211,153,0.32); }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 20px; }
+.kpi { background: rgba(255,255,255,0.04); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px 16px; position: relative; overflow: hidden; }
+.kpi::after { content: ""; position: absolute; right: -30px; top: -30px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(91,140,255,0.20), transparent 70%); }
+.kpi .label { color: var(--text-2); font-size: 12px; }
+.kpi .value { font-size: 26px; font-weight: 700; margin-top: 6px; }
+.kpi .value.bad { color: var(--bad); }
+.kpi .value.good { color: var(--good); }
+.kpi .delta { font-size: 12px; margin-top: 4px; color: var(--text-1); }
+.card { background: rgba(255,255,255,0.04); border: 1px solid var(--line);
+  border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.card h2 { font-size: 15px; margin: 0 0 14px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; }
+.card h2::before { content: ""; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; }
+.card .meta { color: var(--text-2); font-size: 12px; font-weight: 400; margin-left: auto; }
+.row-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+.row-2.eq { grid-template-columns: 1fr 1fr; }
+.chart-box { position: relative; height: 280px; }
+.chart-box.tall { height: 340px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--text-2); font-weight: 500; font-size: 12px; letter-spacing: 0.6px;
+  background: rgba(255,255,255,0.02); position: sticky; top: 0; z-index: 1; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.num.hit { color: var(--bad); font-weight: 700; }
+td.num.zero { color: var(--text-2); }
+tbody tr:hover { background: rgba(91,140,255,0.06); }
+td.code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; color: var(--text-1);
+  max-width: 320px; overflow: hidden; text-overflow: ellipsis; }
+td.cell-ellipsis { max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; vertical-align: middle; }
+.pill.bad { background: rgba(239,79,111,0.16); color: var(--bad); border: 1px solid rgba(239,79,111,0.32); }
+.pill.warn { background: rgba(245,180,85,0.16); color: var(--warn); border: 1px solid rgba(245,180,85,0.32); }
+.pill.info { background: rgba(91,140,255,0.16); color: #b8caff; border: 1px solid rgba(91,140,255,0.32); }
+.pill.err { background: rgba(239,79,111,0.12); color: #ffb3c1; border: 1px solid rgba(239,79,111,0.28); }
+.pill.ok { background: rgba(54,211,153,0.12); color: #9ee9c9; border: 1px solid rgba(54,211,153,0.28); }
+.scroll-y { max-height: 520px; overflow: auto; border-radius: 8px; border: 1px solid var(--line); }
+.scroll-y::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroll-y::-webkit-scrollbar-thumb { background: rgba(120,144,200,0.28); border-radius: 4px; }
+.scroll-y::-webkit-scrollbar-track { background: transparent; }
+.empty { padding: 40px 20px; text-align: center; color: var(--text-2); font-size: 13px; }
+.muted { color: var(--text-2); font-style: italic; }
+
+/* ── 环形图 + 自定义可滚动图例 ── */
+.pie-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: center; height: 320px; }
+.pie-canvas { position: relative; height: 100%; }
+.pie-legend { max-height: 300px; overflow-y: auto; padding-right: 6px; font-size: 12px; }
+.pie-legend::-webkit-scrollbar { width: 6px; }
+.pie-legend::-webkit-scrollbar-thumb { background: rgba(120,144,200,0.30); border-radius: 3px; }
+.legend-item { display: grid; grid-template-columns: 12px 1fr auto; gap: 8px; align-items: center;
+  padding: 5px 8px; border-radius: 6px; cursor: pointer; transition: background .15s; }
+.legend-item:hover { background: rgba(91,140,255,0.10); }
+.legend-item.dim { opacity: 0.35; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.legend-name { color: var(--text-0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.legend-pct { color: var(--text-2); font-variant-numeric: tabular-nums; font-size: 11.5px; }
+
+/* ── 智能洞察 - AIOps 风格 ── */
+.insights-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.ins-card { position: relative; background: linear-gradient(135deg, rgba(91,140,255,0.06), rgba(139,92,255,0.04));
+  border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; overflow: hidden;
+  transition: transform .15s, box-shadow .15s; }
+.ins-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(91,140,255,0.15); }
+.ins-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--accent); border-radius: 2px 0 0 2px; }
+.ins-card.warn::before { background: var(--warn); }
+.ins-card.bad::before { background: var(--bad); }
+.ins-card.good::before { background: var(--good); }
+.ins-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.ins-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; font-size: 14px; flex-shrink: 0;
+  background: rgba(91,140,255,0.18); color: var(--accent); }
+.ins-card.warn .ins-icon { background: rgba(245,180,85,0.18); color: var(--warn); }
+.ins-card.bad .ins-icon { background: rgba(239,79,111,0.18); color: var(--bad); }
+.ins-card.good .ins-icon { background: rgba(54,211,153,0.18); color: var(--good); }
+.ins-title { font-weight: 600; font-size: 13.5px; color: var(--text-0); flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ins-badge { font-size: 10.5px; padding: 2px 8px; border-radius: 999px; font-weight: 600;
+  background: rgba(91,140,255,0.16); color: #b8caff; border: 1px solid rgba(91,140,255,0.28); }
+.ins-card.warn .ins-badge { background: rgba(245,180,85,0.16); color: #ffd49a; border-color: rgba(245,180,85,0.32); }
+.ins-card.bad .ins-badge { background: rgba(239,79,111,0.18); color: #ffb3c1; border-color: rgba(239,79,111,0.36); }
+.ins-card.good .ins-badge { background: rgba(54,211,153,0.16); color: #9ee9c9; border-color: rgba(54,211,153,0.32); }
+.ins-metric { display: flex; gap: 12px; flex-wrap: wrap; margin: 8px 0 10px;
+  padding: 8px 10px; background: rgba(0,0,0,0.20); border-radius: 8px;
+  border: 1px solid rgba(120,144,200,0.10); }
+.ins-metric .m { display: flex; flex-direction: column; gap: 1px; }
+.ins-metric .m-label { color: var(--text-2); font-size: 10.5px; letter-spacing: 0.3px; }
+.ins-metric .m-value { color: var(--text-0); font-size: 14px; font-weight: 600;
+  font-variant-numeric: tabular-nums; }
+.ins-metric .m-value.up { color: var(--bad); }
+.ins-metric .m-value.down { color: var(--good); }
+.ins-desc { color: var(--text-1); font-size: 12.5px; line-height: 1.55; }
+.ins-action { margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(120,144,200,0.14);
+  color: var(--text-2); font-size: 11.5px; display: flex; align-items: center; gap: 6px; }
+.ins-action::before { content: "🛡️"; font-size: 12px; }
+.ins-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
+  padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--line);
+  border-radius: 10px; font-size: 12px; }
+.ins-summary .stat { display: flex; align-items: center; gap: 6px; color: var(--text-1); }
+.ins-summary .stat b { color: var(--text-0); font-weight: 700; font-size: 14px;
+  font-variant-numeric: tabular-nums; }
+.ins-summary .dot { width: 8px; height: 8px; border-radius: 50%; }
+.ins-summary .dot.bad { background: var(--bad); }
+.ins-summary .dot.warn { background: var(--warn); }
+.ins-summary .dot.info { background: var(--accent); }
+.ins-summary .dot.good { background: var(--good); }
+footer { color: var(--text-2); font-size: 11.5px; text-align: center; margin-top: 24px; }
+@media (max-width: 980px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .row-2, .row-2.eq { grid-template-columns: 1fr; }
+  .pie-wrap { grid-template-columns: 1fr; height: auto; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-top">
+      <div>
+        <h1>🛡️ ADC · CloudAudit High-Risk Event Analysis</h1>
+        <div class="sub">
+          Scan window <b>2026-06-06 10:34:41</b> ~ <b>2026-06-13 10:34:41</b>(last 7 days)
+          <span class="tag">UIN: 100039081678</span>
+          <span class="tag ok">✓ Scan Complete</span>
+        </div>
+      </div>
+      <div style="text-align: right; color: var(--text-1); font-size: 12px;">
+        <div>Data source · Tencent Cloud CloudAudit event stream</div>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label">Total Events</div>
+        <div class="value">26</div>
+        <div class="delta">Incl. service-account noise</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Categories Hit</div>
+        <div class="value">3 / 9</div>
+        <div class="delta">9 high-risk categories</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Genuine High-Risk</div>
+        <div class="value good">0</div>
+        <div class="delta">Service accounts excluded</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Critical / High</div>
+        <div class="value good">0</div>
+        <div class="delta">Priority review needed</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row-2">
+    <div class="card">
+      <h2>High-Risk Category Distribution <span class="meta">Share of matched-category events</span></h2>
+      <div class="pie-wrap">
+        <div class="pie-canvas"><canvas id="catPie"></canvas></div>
+        <div class="pie-legend" id="pieLegend"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Operator High-Risk Ranking <span class="meta">Genuine high-risk Top 10</span></h2>
+      <div class="chart-box tall"><canvas id="principalChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>9-Category High-Risk Overview Matrix <span class="meta">All categories listed</span></h2>
+    <div class="scroll-y">
+      <table>
+        <thead><tr>
+          <th>Category</th><th class="num">Hits</th><th>Risk</th><th>Top 3 Principals</th>
+        </tr></thead>
+        <tbody><tr><td>🛑 Audit Anti-Forensics</td><td class="num zero">0</td><td>🔴 Critical</td><td class="cell-ellipsis" title="&lt;span class=&quot;muted&quot;&gt;—&lt;/span&gt;"><span class="muted">—</span></td></tr><tr><td>🔑 AK Lifecycle</td><td class="num zero">0</td><td>🟠 High</td><td class="cell-ellipsis" title="&lt;span class=&quot;muted&quot;&gt;—&lt;/span&gt;"><span class="muted">—</span></td></tr><tr><td>🛡️ Permission Grant</td><td class="num hit">6</td><td>🟠 High</td><td class="cell-ellipsis" title="cam-add_user(6)">cam-add_user(6)</td></tr><tr><td>💥 Resource Destruction</td><td class="num zero">0</td><td>🟠 High</td><td class="cell-ellipsis" title="&lt;span class=&quot;muted&quot;&gt;—&lt;/span&gt;"><span class="muted">—</span></td></tr><tr><td>🔐 KMS Master Key</td><td class="num zero">0</td><td>🟠 High</td><td class="cell-ellipsis" title="&lt;span class=&quot;muted&quot;&gt;—&lt;/span&gt;"><span class="muted">—</span></td></tr><tr><td>📱 MFA Change</td><td class="num zero">0</td><td>🟠 High</td><td class="cell-ellipsis" title="&lt;span class=&quot;muted&quot;&gt;—&lt;/span&gt;"><span class="muted">—</span></td></tr><tr><td>👤 User CRUD</td><td class="num hit">8</td><td>🟡 Medium</td><td class="cell-ellipsis" title="bh-add-white-list(8)">bh-add-white-list(8)</td></tr><tr><td>🎭 Role CRUD</td><td class="num zero">0</td><td>🟡 Medium</td><td class="cell-ellipsis" title="&lt;span class=&quot;muted&quot;&gt;—&lt;/span&gt;"><span class="muted">—</span></td></tr><tr><td>🌐 Security Group Change</td><td class="num hit">12</td><td>🟡 Medium</td><td class="cell-ellipsis" title="mcp-aksk(12)">mcp-aksk(12)</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Genuine High-Risk Event Details(0 total, fully listed)<span class="meta">Risk level → time desc</span></h2>
+    <div class="scroll-y">
+      <table>
+        <thead><tr>
+          <th>Time</th><th>Category</th><th>EventName</th><th>Operator</th>
+          <th>Source IP</th><th>Region</th><th>Resource</th><th>Result</th>
+        </tr></thead>
+        <tbody id="realTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Service Account Automation Summary(3 total, denoised & aggregated)<span class="meta">Excluded from genuine high-risk details</span></h2>
+    <div class="scroll-y">
+      <table>
+        <thead><tr>
+          <th>Service Account</th><th class="num">Total Events</th><th>Top 3 Operations</th>
+        </tr></thead>
+        <tbody id="svcTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card"><h2>🤖 AI Security Insights <span class="meta">Rule-engine generated · 2 items</span></h2><div class="ins-summary"><div class="stat"><span class="dot info"></span>Notice <b>1</b></div><div class="stat"><span class="dot good"></span>Healthy <b>1</b></div></div><div class="insights-wrap" id="insightsWrap"></div></div>
+
+  <footer>Rendered by cloud-auditor-pro@workbuddy · CloudAudit event-stream analysis · Single-account mode</footer>
+</div>
+
+<script>
+const DATA = {"cat_chart": [{"label": "Permission Grant", "count": 6, "risk": "high"}, {"label": "User CRUD", "count": 8, "risk": "medium"}, {"label": "Security Group Change", "count": 12, "risk": "medium"}], "principal_chart": [], "real_events": [], "svc_agg": [{"username": "mcp-aksk", "total": 12, "main_ops": [{"name": "CreateSecurityGroupPolicies", "cnt": 12}]}, {"username": "bh-add-white-list", "total": 8, "main_ops": [{"name": "CreateUser", "cnt": 8}]}, {"username": "cam-add_user", "total": 6, "main_ops": [{"name": "CreatePolicy", "cnt": 3}, {"name": "AttachUserPolicy", "cnt": 3}]}], "insights": [{"title": "Genuine High-Risk Review", "level": "good", "icon": "✅", "badge": "Clean", "metrics": [{"label": "Genuine High-Risk", "value": "0", "mode": "none"}, {"label": "Time Window", "value": "7 d", "mode": "none"}], "desc": "No high-risk operations from non-service accounts in the last 7 days; the event stream is clean.", "action": "Maintain the weekly inspection cadence; consider a 1-day window paired with real-time alerting."}, {"title": "Service Accounts Denoised", "level": "info", "icon": "🤖", "badge": "3", "metrics": [{"label": "Service Accounts", "value": "3", "mode": "none"}, {"label": "Aggregated Events", "value": "26", "mode": "none"}], "desc": "Identified 3 service/automation accounts; their 26 events are shown in aggregate and excluded from genuine high-risk details.", "action": "To audit a specific service account event-by-event, run a dedicated forensic scan (scope=forensic)."}]};
+const T = {"risk_label": {"critical": "Critical", "high": "High", "medium": "Medium"}, "success": "Success", "chart_high_events": "High-Risk Events", "empty_real": "✅ No high-risk operations from non-service accounts", "empty_svc": "No service accounts identified", "empty_cat": "✅ No hits across the 9 high-risk categories", "empty_principal": "No genuine high-risk operator data"};
+const RISK_COLOR = { critical: '#ef4f6f', high: '#f5b455', medium: '#5b8cff' };
+const RISK_PILL  = { critical: 'bad', high: 'warn', medium: 'info' };
+const RISK_LABEL = T.risk_label;
+const COLORS = ['#ef4f6f','#f5b455','#5b8cff','#8b5cff','#36d399','#67c8f5',
+                '#a8d36b','#ffb6c1','#9b8cff','#ffd166'];
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ── 真高危事件表
+const realTb = document.getElementById('realTable');
+if (DATA.real_events.length) {
+  realTb.innerHTML = DATA.real_events.map(r => {
+    const pill = RISK_PILL[r.risk] || 'info';
+    const errOk = (r.error_code === '0' || r.error_code === '' || r.error_code === 'None');
+    const resTxt = [r.resource_name, r.resource_type].filter(Boolean).join(' / ') || '-';
+    const en = escapeHtml(r.event_name) + (r.event_name_cn ? ' <span class="muted">(' + escapeHtml(r.event_name_cn) + ')</span>' : '');
+    return '<tr>' +
+      '<td title="' + escapeHtml(r.time_str) + '">' + escapeHtml(r.time_str) + '</td>' +
+      '<td><span class="pill ' + pill + '">' + escapeHtml(r.cat_label) + '</span></td>' +
+      '<td class="cell-ellipsis" title="' + escapeHtml(r.event_name) + '">' + en + '</td>' +
+      '<td class="cell-ellipsis" title="' + escapeHtml(r.username) + '">' + (escapeHtml(r.username) || '<span class="muted">-</span>') + '</td>' +
+      '<td class="code" title="' + escapeHtml(r.source_ip) + '">' + (escapeHtml(r.source_ip) || '-') + '</td>' +
+      '<td>' + (escapeHtml(r.region) || '-') + '</td>' +
+      '<td class="cell-ellipsis" title="' + escapeHtml(resTxt) + '">' + escapeHtml(resTxt) + '</td>' +
+      '<td>' + (errOk ? '<span class="pill ok">' + escapeHtml(T.success) + '</span>' : '<span class="pill err">' + escapeHtml(r.error_code) + '</span>') + '</td>' +
+    '</tr>';
+  }).join('');
+} else {
+  realTb.parentElement.parentElement.insertAdjacentHTML('afterend', '<div class="empty">' + escapeHtml(T.empty_real) + '</div>');
+  realTb.parentElement.style.display = 'none';
+}
+
+// ── 服务账号聚合表
+const svcTb = document.getElementById('svcTable');
+if (DATA.svc_agg.length) {
+  svcTb.innerHTML = DATA.svc_agg.map(s => {
+    const ops = s.main_ops.map(o => escapeHtml(o.name) + '(' + o.cnt + ')').join(' · ') || '-';
+    return '<tr>' +
+      '<td class="code" title="' + escapeHtml(s.username) + '">' + escapeHtml(s.username) + '</td>' +
+      '<td class="num">' + s.total + '</td>' +
+      '<td class="cell-ellipsis" title="' + escapeHtml(ops) + '">' + ops + '</td>' +
+    '</tr>';
+  }).join('');
+} else {
+  svcTb.parentElement.parentElement.insertAdjacentHTML('afterend', '<div class="empty">' + escapeHtml(T.empty_svc) + '</div>');
+  svcTb.parentElement.style.display = 'none';
+}
+
+// ── 图表
+if (typeof Chart !== 'undefined') {
+  Chart.defaults.color = '#aab4dc';
+  Chart.defaults.borderColor = 'rgba(120,144,200,0.16)';
+  Chart.defaults.font.family = '-apple-system, "PingFang SC", sans-serif';
+
+  // 类别环图
+  if (DATA.cat_chart.length) {
+    const totalCat = DATA.cat_chart.reduce((s, c) => s + c.count, 0);
+    const pieColors = DATA.cat_chart.map(c => RISK_COLOR[c.risk] || '#5b8cff');
+    const pieChart = new Chart(document.getElementById('catPie'), {
+      type: 'doughnut',
+      data: {
+        labels: DATA.cat_chart.map(c => c.label),
+        datasets: [{ data: DATA.cat_chart.map(c => c.count), backgroundColor: pieColors, borderWidth: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '62%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => c.label + ': ' + c.parsed +
+            ' (' + (totalCat > 0 ? (c.parsed/totalCat*100).toFixed(1) : '0.0') + '%)' } }
+        }
+      }
+    });
+    const legendEl = document.getElementById('pieLegend');
+    DATA.cat_chart.forEach((c, idx) => {
+      const pct = totalCat > 0 ? (c.count / totalCat * 100) : 0;
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML =
+        '<span class="legend-dot" style="background:' + pieColors[idx] + '"></span>' +
+        '<span class="legend-name" title="' + c.label + '">' + c.label + '</span>' +
+        '<span class="legend-pct">' + c.count + ' · ' + pct.toFixed(0) + '%</span>';
+      item.addEventListener('click', () => {
+        const m = pieChart.getDatasetMeta(0);
+        m.data[idx].hidden = !m.data[idx].hidden;
+        item.classList.toggle('dim', m.data[idx].hidden);
+        pieChart.update();
+      });
+      legendEl.appendChild(item);
+    });
+  } else {
+    document.getElementById('catPie').parentElement.parentElement.innerHTML =
+      '<div class="empty" style="grid-column:1/-1;">' + escapeHtml(T.empty_cat) + '</div>';
+  }
+
+  // 操作人柱图
+  if (DATA.principal_chart.length) {
+    new Chart(document.getElementById('principalChart'), {
+      type: 'bar',
+      data: {
+        labels: DATA.principal_chart.map(p => p.name),
+        datasets: [{ label: T.chart_high_events, data: DATA.principal_chart.map(p => p.count),
+          backgroundColor: '#ef4f6f', borderRadius: 6 }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { precision: 0 }, grid: { color: 'rgba(120,144,200,0.10)' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  } else {
+    document.getElementById('principalChart').parentElement.innerHTML =
+      '<div class="empty">' + escapeHtml(T.empty_principal) + '</div>';
+  }
+}
+
+// ── 智能洞察卡片
+const insWrap = document.getElementById('insightsWrap');
+if (insWrap && DATA.insights && DATA.insights.length) {
+  const order = { bad: 0, warn: 1, info: 2, good: 3 };
+  const sorted = DATA.insights.slice().sort((a, b) => (order[a.level] || 9) - (order[b.level] || 9));
+  insWrap.innerHTML = sorted.map(ins => {
+    const lvl = ['bad','warn','info','good'].includes(ins.level) ? ins.level : 'info';
+    const icon = ins.icon || '🔍';
+    const badge = ins.badge ? '<span class="ins-badge">' + escapeHtml(ins.badge) + '</span>' : '';
+    let metricsHtml = '';
+    if (Array.isArray(ins.metrics) && ins.metrics.length) {
+      metricsHtml = '<div class="ins-metric">' +
+        ins.metrics.map(m => {
+          const mode = ['up','down','flat'].includes(m.mode) ? m.mode : '';
+          return '<div class="m"><span class="m-label">' + escapeHtml(m.label) + '</span>' +
+            '<span class="m-value ' + mode + '">' + escapeHtml(m.value) + '</span></div>';
+        }).join('') + '</div>';
+    }
+    const action = ins.action ? '<div class="ins-action">' + escapeHtml(ins.action) + '</div>' : '';
+    return '<div class="ins-card ' + lvl + '">' +
+      '<div class="ins-head"><div class="ins-icon">' + icon + '</div>' +
+        '<div class="ins-title">' + escapeHtml(ins.title) + '</div>' + badge + '</div>' +
+      metricsHtml +
+      '<div class="ins-desc">' + escapeHtml(ins.desc) + '</div>' + action +
+    '</div>';
+  }).join('');
+}
+</script>
+</body>
+</html>
